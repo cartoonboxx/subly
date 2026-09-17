@@ -126,7 +126,7 @@
   align-items: center;
   gap: 10px;
   height: 44px;
-  padding: 0 14px;
+  padding: 0 14px !important;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   color: #64748b;
@@ -149,6 +149,7 @@
 }
 
 .filterButton {
+  position: relative;
   width: 44px;
   height: 44px;
   min-height: 44px;
@@ -167,6 +168,23 @@
 
 .filterButton ion-icon {
   font-size: 20px;
+}
+
+.filterBadge {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  display: inline-flex;
+  min-width: 16px;
+  height: 16px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: #ffffff;
+  background: #dc2626;
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 800;
 }
 
 .filterChips {
@@ -233,7 +251,57 @@
 .subscriptionList {
   display: flex;
   flex-direction: column;
+  gap: 18px;
+}
+
+.monthGroup {
+  display: flex;
+  flex-direction: column;
   gap: 10px;
+}
+
+.monthHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 2px;
+
+  h3 {
+    margin: 0;
+    color: #111827;
+    font-size: 16px;
+    line-height: 1.2;
+    font-weight: 800;
+  }
+
+  span {
+    display: inline-flex;
+    min-width: 28px;
+    height: 24px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
+    border-radius: 999px;
+    color: #15803d;
+    background: #dcfce7;
+    font-size: 12px;
+    line-height: 1;
+    font-weight: 800;
+  }
+}
+
+.emptyState {
+  margin: 8px 0 0;
+  padding: 18px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  color: #64748b;
+  background: #f8fafc;
+  font-size: 14px;
+  line-height: 1.35;
+  font-weight: 700;
+  text-align: center;
 }
 
 @media (max-width: 360px) {

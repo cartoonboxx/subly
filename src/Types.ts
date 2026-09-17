@@ -4,10 +4,17 @@ declare global {
   interface Subscription {
     id: number;
     name: string;
-    colorClass: string;
-    icon: string;
+    price: number;
     date: string;
     period: string; // неделя, месяц и другие метрики
-    price: number;
+    colorClass: string;
+    icon: string;
+    isActive: boolean;
+    category?: Category;
+  }
+
+  interface Category {
+    id: number;
+    name: string;
   }
 }

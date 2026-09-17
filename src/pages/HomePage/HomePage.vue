@@ -16,14 +16,14 @@
         </ion-button>
       </div>
 
-      <article :class="style.summaryCard">
+      <article :class="style.summaryCard" @click="openStatisticsPage">
         <div :class="style.summaryTop">
           <span>Будет потрачено в сентябре</span>
           <span :class="style.summaryBadge">Итог месяца</span>
         </div>
 
         <div :class="style.totalRow">
-          <strong>3 247 ₽</strong>
+          <strong>{{ $subscriptionStore.sumSubscriptions() }} ₽</strong>
           <span>12 подписок</span>
         </div>
 
@@ -43,12 +43,14 @@
         :icon="calendarOutline"
         title="Следующее"
         subtitle="19 сен"
+        @click="openStatisticsPage"
       />
 
       <StatisticsCard
         :icon="diamondOutline"
         title="Самая дорогая"
-        subtitle="399 ₽"
+        :subtitle="`${mostExpensiveSub} ₽`"
+        @click="openStatisticsPage"
       />
     </section>
 
@@ -63,7 +65,7 @@
           fill="clear"
           size="small"
           :class="style.buttonAll"
-          href="/subscriptions"
+          @click="openSubscriptionsPage"
         >
           Все
         </ion-button>
@@ -87,11 +89,8 @@ import style from "./HomePage.module.scss";
 import {IonButton, IonIcon} from "@ionic/vue";
 import {
   calendarOutline,
-  cardOutline,
   diamondOutline,
-  notificationsOutline,
-  playCircleOutline,
-  radioOutline
+  notificationsOutline
 } from "ionicons/icons";
 import SubscriptionCard from "@/components/SubscriptionCard/SubscriptionCard.vue";
 import StatisticsCard from "@/components/StatisticsCard/StatisticsCard.vue";
@@ -109,37 +108,29 @@ export default defineComponent({
       calendarOutline,
       diamondOutline,
       notificationsOutline,
-      style,
-      subscriptions: [
-        {
-          id: 1,
-          colorClass: "green",
-          date: "19 сентября",
-          icon: playCircleOutline,
-          name: "YouTube Premium",
-          period: "месяц",
-          price: 399
-        },
-        {
-          id: 2,
-          colorClass: "blue",
-          date: "22 сентября",
-          icon: radioOutline,
-          name: "Яндекс Плюс",
-          period: "месяц",
-          price: 299
-        },
-        {
-          id: 3,
-          colorClass: "violet",
-          date: "28 сентября",
-          icon: cardOutline,
-          name: "iCloud+",
-          period: "месяц",
-          price: 149
-        }
-      ] as Subscription[]
+      style
     };
+  },
+  methods: {
+    openStatisticsPage() {
+      this.$router.push("/statistics");
+    },
+    openSubscriptionsPage() {
+      this.$router.push("/subscriptions");
+    }
+  },
+  computed: {
+    subscriptions() {
+      return this.$subscriptionStore.subscriptions.slice(0, 3);
+    },
+    allSubscriptions() {
+      return this.$subscriptionStore.subscriptions;
+    },
+    mostExpensiveSub() {
+      return this.allSubscriptions.reduce((maxPrice, subscription) => {
+        return Math.max(maxPrice, subscription.price);
+      }, 0);
+    }
   }
 });
 </script>

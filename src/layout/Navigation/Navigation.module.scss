@@ -9,14 +9,12 @@
   display: flex;
   align-items: center;
 
-  padding: 6px 8px 8px;
-  margin: 8px;
-
   --background: #ffffff;
   --border: 0;
   border-top: 0;
   box-shadow: 0 0 8px 1px rgba(0, 0, 0, 0.3);
-  border-radius: 26px;
+  border-top-left-radius: 26px;
+  border-top-right-radius: 26px;
 
   ion-tab-button {
     height: 100%;
