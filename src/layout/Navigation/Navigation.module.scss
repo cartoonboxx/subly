@@ -1,0 +1,60 @@
+.tabs {
+  background: white;
+}
+
+.tabBar {
+  height: 70px;
+  min-height: 70px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 6px 8px 8px;
+  margin: 8px;
+
+  --background: #ffffff;
+  --border: 0;
+  border-top: 0;
+  box-shadow: 0 0 8px 1px rgba(0, 0, 0, 0.3);
+  border-radius: 26px;
+
+  ion-tab-button {
+    height: 100%;
+
+    --background: transparent;
+
+    --padding-top: 6px;
+    --padding-bottom: 6px;
+
+    ion-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    ion-label {
+      margin-top: 3px;
+      font-size: 11px;
+    }
+  }
+}
+
+.buttonAdd {
+  width: 46px;
+  height: 46px;
+  min-height: 46px;
+
+  flex: 0 0 46px;
+
+  margin: 0 8px;
+
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+
+  --border-radius: 50%;
+
+  ion-icon {
+    font-size: 24px;
+  }
+}
