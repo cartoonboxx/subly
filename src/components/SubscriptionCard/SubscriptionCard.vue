@@ -1,5 +1,12 @@
 <template>
-  <article :key="subscription.name" :class="style.subscriptionItem">
+  <article
+    :key="subscription.name"
+    :class="[style.subscriptionItem, isInteractive ? style.interactive : null]"
+    :tabindex="isInteractive ? 0 : undefined"
+    @click="selectSubscription"
+    @keydown.enter="selectSubscription"
+    @keydown.space.prevent="selectSubscription"
+  >
     <div :class="[style.serviceIcon, style[subscription.colorClass]]">
       <ion-icon :icon="subscription.icon" />
     </div>
@@ -25,15 +32,29 @@ export default defineComponent({
   name: "SubscriptionCard",
   components: {IonIcon},
   props: {
+    isInteractive: {
+      type: Boolean,
+      default: false
+    },
     subscription: {
       type: Object as PropType<Subscription>,
       required: true
     }
   },
+  emits: ["select"],
   data() {
     return {
       style
     };
+  },
+  methods: {
+    selectSubscription() {
+      if (!this.isInteractive) {
+        return;
+      }
+
+      this.$emit("select", this.subscription);
+    }
   }
 });
 </script>

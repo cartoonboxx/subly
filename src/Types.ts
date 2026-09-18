@@ -13,6 +13,10 @@ declare global {
     category?: Category;
   }
 
+  type CreateSubscriptionInput = Omit<Subscription, "id">;
+
+  type UpdateSubscriptionInput = Partial<CreateSubscriptionInput>;
+
   interface Category {
     id: number;
     name: string;

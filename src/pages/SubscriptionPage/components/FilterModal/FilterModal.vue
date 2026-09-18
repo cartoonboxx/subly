@@ -1,93 +1,108 @@
 <template>
-  <ion-modal
-    :is-open="isOpen"
-    :initial-breakpoint="0.68"
-    :breakpoints="[0, 0.68, 0.96]"
-    @didDismiss="$emit('close')"
-  >
-    <div :class="style.filterModal">
-      <div :class="style.filterModalHeader">
-        <div>
-          <span :class="style.eyebrow">Настройки</span>
-          <h2>Фильтры</h2>
+  <div :class="style.filterControl">
+    <ion-button
+      fill="clear"
+      :class="style.filterButton"
+      aria-label="Фильтры"
+      @click="openFilterModal"
+    >
+      <ion-icon :icon="optionsOutline" />
+      <span v-if="activeFiltersCount" :class="style.filterBadge">
+        {{ activeFiltersCount }}
+      </span>
+    </ion-button>
+
+    <ion-modal
+      :is-open="isFilterModalOpen"
+      :initial-breakpoint="0.68"
+      :breakpoints="[0, 0.68, 0.96]"
+      @didDismiss="closeFilterModal"
+    >
+      <div :class="style.filterModal">
+        <div :class="style.filterModalHeader">
+          <div>
+            <span :class="style.eyebrow">Настройки</span>
+            <h2>Фильтры</h2>
+          </div>
+
+          <button :class="style.modalCloseButton" @click="closeFilterModal">
+            Готово
+          </button>
         </div>
 
-        <button :class="style.modalCloseButton" @click="$emit('close')">
-          Готово
-        </button>
+        <section :class="style.filterGroup">
+          <div :class="style.filterGroupHeader">
+            <h3>Категория</h3>
+            <span>{{ selectedCategory }}</span>
+          </div>
+
+          <div :class="style.modalChips">
+            <button
+              :class="[
+                style.chip,
+                selectedCategory === 'Все' ? style.activeChip : null
+              ]"
+              @click="selectCurrentCategory('Все')"
+            >
+              Все
+            </button>
+
+            <button
+              v-for="category in categories"
+              :key="category.id"
+              :class="[
+                style.chip,
+                selectedCategory === category.name ? style.activeChip : null
+              ]"
+              @click="selectCurrentCategory(category.name)"
+            >
+              {{ category.name }}
+            </button>
+          </div>
+        </section>
+
+        <section :class="style.filterGroup">
+          <div :class="style.filterGroupHeader">
+            <h3>Стоимость</h3>
+            <span>{{ selectedPriceFilterLabel }}</span>
+          </div>
+
+          <div :class="style.priceOptions">
+            <button
+              v-for="priceFilter in priceFilters"
+              :key="priceFilter.id"
+              :class="[
+                style.priceOption,
+                selectedPriceFilter === priceFilter.id
+                  ? style.activePriceOption
+                  : null
+              ]"
+              @click="selectPriceFilter(priceFilter.id)"
+            >
+              <strong>{{ priceFilter.label }}</strong>
+              <span>{{ priceFilter.description }}</span>
+            </button>
+          </div>
+        </section>
+
+        <div :class="style.filterModalActions">
+          <button :class="style.resetFiltersButton" @click="resetFilters">
+            Сбросить
+          </button>
+
+          <button :class="style.applyFiltersButton" @click="closeFilterModal">
+            Показать {{ subscriptionsCount }}
+          </button>
+        </div>
       </div>
-
-      <section :class="style.filterGroup">
-        <div :class="style.filterGroupHeader">
-          <h3>Категория</h3>
-          <span>{{ selectedCategory }}</span>
-        </div>
-
-        <div :class="style.modalChips">
-          <button
-            :class="[
-              style.chip,
-              selectedCategory === 'Все' ? style.activeChip : null
-            ]"
-            @click="$emit('select-category', 'Все')"
-          >
-            Все
-          </button>
-
-          <button
-            v-for="category in categories"
-            :key="category.id"
-            :class="[
-              style.chip,
-              selectedCategory === category.name ? style.activeChip : null
-            ]"
-            @click="$emit('select-category', category.name)"
-          >
-            {{ category.name }}
-          </button>
-        </div>
-      </section>
-
-      <section :class="style.filterGroup">
-        <div :class="style.filterGroupHeader">
-          <h3>Стоимость</h3>
-          <span>{{ selectedPriceFilterLabel }}</span>
-        </div>
-
-        <div :class="style.priceOptions">
-          <button
-            v-for="priceFilter in priceFilters"
-            :key="priceFilter.id"
-            :class="[
-              style.priceOption,
-              selectedPriceFilter === priceFilter.id
-                ? style.activePriceOption
-                : null
-            ]"
-            @click="$emit('select-price-filter', priceFilter.id)"
-          >
-            <strong>{{ priceFilter.label }}</strong>
-            <span>{{ priceFilter.description }}</span>
-          </button>
-        </div>
-      </section>
-
-      <div :class="style.filterModalActions">
-        <button :class="style.resetFiltersButton" @click="$emit('reset')">
-          Сбросить
-        </button>
-
-        <button :class="style.applyFiltersButton" @click="$emit('close')">
-          Показать {{ subscriptionsCount }}
-        </button>
-      </div>
-    </div>
-  </ion-modal>
+    </ion-modal>
+  </div>
 </template>
 
 <script lang="ts">
-import {IonModal} from "@ionic/vue";
+import {IonButton, IonIcon, IonModal} from "@ionic/vue";
 import {defineComponent, PropType} from "vue";
+import {optionsOutline} from "ionicons/icons";
 import style from "./FilterModal.module.scss";
 
 type PriceFilterId = "all" | "cheap" | "middle" | "expensive";
@@ -103,6 +118,8 @@ type PriceFilter = {
 export default defineComponent({
   name: "FilterModal",
   components: {
+    IonButton,
+    IonIcon,
     IonModal
   },
   props: {
@@ -110,36 +127,98 @@ export default defineComponent({
       type: Array as PropType<Category[]>,
       required: true
     },
-    isOpen: {
-      type: Boolean,
-      required: true
-    },
-    priceFilters: {
-      type: Array as PropType<PriceFilter[]>,
-      required: true
-    },
-    selectedCategory: {
-      type: String,
-      required: true
-    },
-    selectedPriceFilter: {
-      type: String as PropType<PriceFilterId>,
-      required: true
-    },
-    selectedPriceFilterLabel: {
-      type: String,
-      required: true
-    },
     subscriptionsCount: {
       type: Number,
       required: true
     }
   },
-  emits: ["close", "reset", "select-category", "select-price-filter"],
+  emits: ["change"],
   data() {
     return {
+      isFilterModalOpen: false,
+      optionsOutline,
+      priceFilters: [
+        {
+          id: "all",
+          label: "Любая",
+          description: "Без ограничения цены",
+          min: null,
+          max: null
+        },
+        {
+          id: "cheap",
+          label: "До 300 ₽",
+          description: "Недорогие подписки",
+          min: null,
+          max: 300
+        },
+        {
+          id: "middle",
+          label: "300-700 ₽",
+          description: "Средний диапазон",
+          min: 300,
+          max: 700
+        },
+        {
+          id: "expensive",
+          label: "От 700 ₽",
+          description: "Самые дорогие",
+          min: 700,
+          max: null
+        }
+      ] as PriceFilter[],
+      selectedCategory: "Все",
+      selectedPriceFilter: "all" as PriceFilterId,
       style
     };
+  },
+  methods: {
+    openFilterModal() {
+      this.isFilterModalOpen = true;
+    },
+    closeFilterModal() {
+      this.isFilterModalOpen = false;
+    },
+    selectCurrentCategory(category: string) {
+      this.selectedCategory = category;
+      this.emitFilters();
+    },
+    selectPriceFilter(priceFilter: PriceFilterId) {
+      this.selectedPriceFilter = priceFilter;
+      this.emitFilters();
+    },
+    resetFilters() {
+      this.selectedCategory = "Все";
+      this.selectedPriceFilter = "all";
+      this.emitFilters();
+    },
+    emitFilters() {
+      const priceFilter = this.selectedPriceFilterConfig;
+
+      this.$emit("change", {
+        category: this.selectedCategory,
+        min: priceFilter.min,
+        max: priceFilter.max
+      });
+    }
+  },
+  computed: {
+    selectedPriceFilterConfig() {
+      return (
+        this.priceFilters.find((priceFilter) => {
+          return priceFilter.id === this.selectedPriceFilter;
+        }) ?? this.priceFilters[0]
+      );
+    },
+    selectedPriceFilterLabel() {
+      return this.selectedPriceFilterConfig.label;
+    },
+    activeFiltersCount() {
+      return [
+        this.selectedCategory !== "Все",
+        this.selectedPriceFilter !== "all"
+      ].filter(Boolean).length;
+    }
   }
 });
 </script>

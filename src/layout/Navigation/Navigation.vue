@@ -13,9 +13,10 @@
           <ion-label>Подписки</ion-label>
         </ion-tab-button>
 
-        <ion-button :class="style.buttonAdd">
-          <ion-icon :icon="addOutline" />
-        </ion-button>
+        <AddSubscriptionModal
+          :categories="categories"
+          :button-class="style.buttonAdd"
+        />
 
         <ion-tab-button tab="statistics" href="/statistics">
           <ion-icon :icon="statsChartOutline"></ion-icon>
@@ -51,10 +52,12 @@ import {
 
 import {defineComponent} from "vue";
 import style from "./Navigation.module.scss";
+import AddSubscriptionModal from "@/pages/SubscriptionPage/components/AddSubscriptionModal/AddSubscriptionModal.vue";
 
 export default defineComponent({
   name: "NavigationLayout",
   components: {
+    AddSubscriptionModal,
     IonPage,
     IonTabs,
     IonRouterOutlet,
@@ -72,6 +75,11 @@ export default defineComponent({
       statsChartOutline,
       style
     };
+  },
+  computed: {
+    categories() {
+      return this.$subscriptionStore.categories;
+    }
   }
 });
 </script>

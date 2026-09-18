@@ -119,6 +119,29 @@ export const subscriptionStore = defineStore("subscriptions", {
     getSubscriptions: (state) => state.subscriptions
   },
   actions: {
+    addSubscription(subscription: CreateSubscriptionInput) {
+      const nextId =
+        Math.max(...this.subscriptions.map((item) => item.id), 0) + 1;
+
+      this.subscriptions.push({
+        ...subscription,
+        id: nextId
+      });
+    },
+    updateSubscription(id: number, subscription: UpdateSubscriptionInput) {
+      const subscriptionIndex = this.subscriptions.findIndex((item) => {
+        return item.id === id;
+      });
+
+      if (subscriptionIndex === -1) {
+        return;
+      }
+
+      this.subscriptions[subscriptionIndex] = {
+        ...this.subscriptions[subscriptionIndex],
+        ...subscription
+      };
+    },
     sumSubscriptions() {
       return this.subscriptions
         .map((item) => item.price)

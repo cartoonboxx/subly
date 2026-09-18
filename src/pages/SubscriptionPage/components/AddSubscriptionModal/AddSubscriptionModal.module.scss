@@ -1,0 +1,327 @@
+.modal {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 100%;
+  padding: 22px 20px calc(28px + var(--ion-safe-area-bottom));
+  background: #ffffff;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+
+  h2 {
+    margin-top: 4px;
+    color: #111827;
+    font-size: 24px;
+    line-height: 1.15;
+    font-weight: 800;
+  }
+}
+
+.eyebrow {
+  display: block;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.closeButton {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  color: #15803d;
+  background: #dcfce7;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 8px;
+
+  span {
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.2;
+    font-weight: 800;
+  }
+
+  ion-input,
+  ion-select {
+    min-height: 44px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    color: #111827;
+    background: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+
+    --padding-end: 12px;
+    --padding-start: 12px;
+  }
+}
+
+.optionGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.groupHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+
+  h3 {
+    margin: 0;
+    color: #111827;
+    font-size: 16px;
+    line-height: 1.2;
+    font-weight: 800;
+  }
+
+  span {
+    overflow: hidden;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.2;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.previewButton {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 58px;
+  padding: 8px 12px 8px 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  color: #111827;
+  background: #ffffff;
+  font: inherit;
+  text-align: left;
+
+  strong,
+  em {
+    overflow: hidden;
+    min-width: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  strong {
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 800;
+  }
+
+  em {
+    color: #15803d;
+    font-size: 12px;
+    line-height: 1.2;
+    font-style: normal;
+    font-weight: 800;
+  }
+}
+
+.previewIcon,
+.previewColor {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 8px;
+}
+
+.previewIcon {
+  color: #166534;
+  background: #dcfce7;
+
+  ion-icon {
+    font-size: 22px;
+  }
+}
+
+.previewColor {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.pickerContent {
+  --background: #ffffff;
+}
+
+.pickerModal {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  gap: 18px;
+  padding: 22px 20px calc(28px + var(--ion-safe-area-bottom));
+}
+
+.pickerGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.pickerOption {
+  display: flex;
+  min-width: 0;
+  min-height: 92px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  color: #334155;
+  background: #ffffff;
+  font: inherit;
+
+  ion-icon {
+    font-size: 24px;
+  }
+
+  span {
+    overflow: hidden;
+    max-width: 100%;
+    font-size: 12px;
+    line-height: 1.2;
+    font-weight: 800;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.colorSwatch {
+  display: block;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+}
+
+.green.previewColor,
+.green.colorSwatch,
+.green span {
+  background: #22c55e;
+}
+
+.blue.previewColor,
+.blue.colorSwatch,
+.blue span {
+  background: #3b82f6;
+}
+
+.violet.previewColor,
+.violet.colorSwatch,
+.violet span {
+  background: #8b5cf6;
+}
+
+.orange.previewColor,
+.orange.colorSwatch,
+.orange span {
+  background: #f97316;
+}
+
+.red.previewColor,
+.red.colorSwatch,
+.red span {
+  background: #f43f5e;
+}
+
+.cyan.previewColor,
+.cyan.colorSwatch,
+.cyan span {
+  background: #06b6d4;
+}
+
+.pink.previewColor,
+.pink.colorSwatch,
+.pink span {
+  background: #ec4899;
+}
+
+.amber.previewColor,
+.amber.colorSwatch,
+.amber span {
+  background: #f59e0b;
+}
+
+.indigo.previewColor,
+.indigo.colorSwatch,
+.indigo span {
+  background: #6366f1;
+}
+
+.slate.previewColor,
+.slate.colorSwatch,
+.slate span {
+  background: #475569;
+}
+
+.activeOption {
+  border-color: #15803d;
+  background: #f0fdf4;
+  box-shadow: inset 0 0 0 1px #15803d;
+}
+
+.errorMessage {
+  margin: 0;
+  color: #be123c;
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.submitButton {
+  min-height: 48px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 8px;
+  color: #ffffff;
+  background: #15803d;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.submitButton:disabled {
+  color: #94a3b8;
+  background: #e2e8f0;
+}
+
+@media (max-width: 360px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .pickerGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

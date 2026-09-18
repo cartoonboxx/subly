@@ -1,0 +1,34 @@
+.toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.searchBox {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 14px !important;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  color: #64748b;
+  background: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+
+  ion-icon {
+    flex: 0 0 auto;
+    color: #15803d;
+    font-size: 19px;
+  }
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

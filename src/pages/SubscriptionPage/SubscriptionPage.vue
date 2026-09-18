@@ -1,139 +1,45 @@
 <template>
   <PageContainer>
-    <section :class="style.header">
-      <div>
-        <span :class="style.eyebrow">Каталог</span>
-        <h1>Подписки</h1>
-      </div>
+    <SubscriptionHeader :categories="categories" />
 
-      <ion-button :class="style.addButton" aria-label="Добавить подписку">
-        <ion-icon :icon="addOutline" />
-      </ion-button>
-    </section>
-
-    <section :class="style.summaryCard">
-      <div :class="style.summaryTop">
-        <span>Активные подписки</span>
-        <strong>{{ subscriptions.length }}</strong>
-      </div>
-
-      <div :class="style.summaryGrid">
-        <div>
-          <span>В месяц</span>
-          <strong>{{ subscriptionsMonthlyTotal }} ₽</strong>
-        </div>
-
-        <div>
-          <span>Следующее</span>
-          <strong>{{ nextPaymentLabel }}</strong>
-        </div>
-      </div>
-    </section>
-
-    <section :class="style.toolbar" aria-label="Фильтры подписок">
-      <ion-input
-        v-model="searchQuery"
-        :class="style.searchBox"
-        clear-input
-        placeholder="Поиск подписки"
-      >
-        <ion-icon slot="start" :icon="searchOutline" />
-      </ion-input>
-
-      <ion-button
-        fill="clear"
-        :class="style.filterButton"
-        aria-label="Фильтры"
-        @click="openFilterModal"
-      >
-        <ion-icon :icon="optionsOutline" />
-        <span v-if="activeFiltersCount" :class="style.filterBadge">
-          {{ activeFiltersCount }}
-        </span>
-      </ion-button>
-    </section>
-
-    <section :class="style.filterChips" aria-label="Категории">
-      <button
-        :class="[
-          style.chip,
-          selectedCategory === 'Все' ? style.activeChip : null
-        ]"
-        @click="selectCurrentCategory('Все')"
-      >
-        Все
-      </button>
-      <button
-        :class="[
-          style.chip,
-          selectedCategory === category.name ? style.activeChip : null
-        ]"
-        v-for="category in categories"
-        :key="category.id"
-        @click="selectCurrentCategory(category.name)"
-      >
-        {{ category.name }}
-      </button>
-    </section>
-
-    <section :class="style.section">
-      <div :class="style.sectionHeader">
-        <div>
-          <span :class="style.eyebrow">Список</span>
-          <h2>{{ subscriptionListTitle }}</h2>
-        </div>
-
-        <span>По списанию</span>
-      </div>
-
-      <div :class="style.subscriptionList">
-        <section
-          v-for="monthGroup in subscriptionMonthGroups"
-          :key="monthGroup.name"
-          :class="style.monthGroup"
-        >
-          <div :class="style.monthHeader">
-            <h3>{{ monthGroup.name }}</h3>
-            <span>{{ monthGroup.subscriptions.length }}</span>
-          </div>
-
-          <SubscriptionCard
-            v-for="subscription in monthGroup.subscriptions"
-            :key="subscription.id"
-            :subscription="subscription"
-          />
-        </section>
-
-        <p v-if="!subscriptions.length" :class="style.emptyState">
-          Подписок не найдено
-        </p>
-      </div>
-    </section>
-
-    <FilterModal
-      :categories="categories"
-      :is-open="isFilterModalOpen"
-      :price-filters="priceFilters"
-      :selected-category="selectedCategory"
-      :selected-price-filter="selectedPriceFilter"
-      :selected-price-filter-label="selectedPriceFilterLabel"
+    <SubscriptionSummary
+      :monthly-total="subscriptionsMonthlyTotal"
+      :next-payment-label="nextPaymentLabel"
       :subscriptions-count="subscriptions.length"
-      @close="closeFilterModal"
-      @reset="resetFilters"
-      @select-category="selectCurrentCategory"
-      @select-price-filter="selectPriceFilter"
+    />
+
+    <SubscriptionToolbar
+      :categories="categories"
+      :search-query="searchQuery"
+      :subscriptions-count="subscriptions.length"
+      @change-filters="updateFilters"
+      @update:search-query="updateSearchQuery"
+    />
+
+    <SubscriptionMonthList
+      :month-groups="subscriptionMonthGroups"
+      :subscriptions-count="subscriptions.length"
+      :title="subscriptionListTitle"
+      @select-subscription="editSubscription"
+    />
+
+    <AddSubscriptionModal
+      :categories="categories"
+      :editable-subscription="editableSubscription"
+      :show-button="false"
+      @close-edit="clearEditableSubscription"
     />
   </PageContainer>
 </template>
 
 <script lang="ts">
 import PageContainer from "@/layout/PageContainer/PageContainer.vue";
-import SubscriptionCard from "@/components/SubscriptionCard/SubscriptionCard.vue";
-import FilterModal from "./components/FilterModal/FilterModal.vue";
-import {IonButton, IonIcon, IonInput} from "@ionic/vue";
 import {defineComponent} from "vue";
-import {addOutline, optionsOutline, searchOutline} from "ionicons/icons";
-import style from "./SubscriptionPage.module.scss";
+import AddSubscriptionModal from "./components/AddSubscriptionModal/AddSubscriptionModal.vue";
+import SubscriptionHeader from "./components/SubscriptionHeader/SubscriptionHeader.vue";
+import SubscriptionMonthList from "./components/SubscriptionMonthList/SubscriptionMonthList.vue";
+import SubscriptionSummary from "./components/SubscriptionSummary/SubscriptionSummary.vue";
+import SubscriptionToolbar from "./components/SubscriptionToolbar/SubscriptionToolbar.vue";
 
 type SubscriptionMonthGroup = {
   name: string;
@@ -141,12 +47,8 @@ type SubscriptionMonthGroup = {
   subscriptions: Subscription[];
 };
 
-type PriceFilterId = "all" | "cheap" | "middle" | "expensive";
-
-type PriceFilter = {
-  id: PriceFilterId;
-  label: string;
-  description: string;
+type SubscriptionFilters = {
+  category: string;
   min: number | null;
   max: number | null;
 };
@@ -166,76 +68,39 @@ const calendarMonths = [
   {name: "Декабрь", dateName: "декабря"}
 ];
 
-const priceFilters: PriceFilter[] = [
-  {
-    id: "all",
-    label: "Любая",
-    description: "Без ограничения цены",
-    min: null,
-    max: null
-  },
-  {
-    id: "cheap",
-    label: "До 300 ₽",
-    description: "Недорогие подписки",
-    min: null,
-    max: 300
-  },
-  {
-    id: "middle",
-    label: "300-700 ₽",
-    description: "Средний диапазон",
-    min: 300,
-    max: 700
-  },
-  {
-    id: "expensive",
-    label: "От 700 ₽",
-    description: "Самые дорогие",
-    min: 700,
-    max: null
-  }
-];
-
 export default defineComponent({
   name: "SubscriptionPage",
   components: {
-    FilterModal,
-    IonButton,
-    IonIcon,
-    IonInput,
+    AddSubscriptionModal,
     PageContainer,
-    SubscriptionCard
+    SubscriptionHeader,
+    SubscriptionMonthList,
+    SubscriptionSummary,
+    SubscriptionToolbar
   },
   data() {
     return {
-      addOutline,
-      optionsOutline,
-      searchOutline,
-      style,
-      isFilterModalOpen: false,
-      priceFilters,
-      searchQuery: "",
-      selectedCategory: "Все",
-      selectedPriceFilter: "all" as PriceFilterId
+      activeFilters: {
+        category: "Все",
+        min: null,
+        max: null
+      } as SubscriptionFilters,
+      editableSubscription: null as Subscription | null,
+      searchQuery: ""
     };
   },
   methods: {
-    openFilterModal() {
-      this.isFilterModalOpen = true;
+    updateFilters(filters: SubscriptionFilters) {
+      this.activeFilters = filters;
     },
-    closeFilterModal() {
-      this.isFilterModalOpen = false;
+    updateSearchQuery(query: string | number | null | undefined) {
+      this.searchQuery = String(query ?? "");
     },
-    selectCurrentCategory(category: string) {
-      this.selectedCategory = category;
+    editSubscription(subscription: Subscription) {
+      this.editableSubscription = subscription;
     },
-    selectPriceFilter(priceFilter: PriceFilterId) {
-      this.selectedPriceFilter = priceFilter;
-    },
-    resetFilters() {
-      this.selectedCategory = "Все";
-      this.selectedPriceFilter = "all";
+    clearEditableSubscription() {
+      this.editableSubscription = null;
     },
     getSubscriptionMonth(date: string) {
       const normalizedDate = date.toLowerCase();
@@ -260,38 +125,23 @@ export default defineComponent({
 
       return this.allSubscriptions.filter((subscription) => {
         const isSelectedCategory =
-          this.selectedCategory === "Все" ||
-          subscription.category?.name === this.selectedCategory;
+          this.activeFilters.category === "Все" ||
+          subscription.category?.name === this.activeFilters.category;
         const isSearchMatched =
           !normalizedQuery ||
           subscription.name.toLowerCase().includes(normalizedQuery) ||
           subscription.category?.name.toLowerCase().includes(normalizedQuery);
-        const priceFilter = this.selectedPriceFilterConfig;
         const isPriceMatched =
-          (!priceFilter.min || subscription.price >= priceFilter.min) &&
-          (!priceFilter.max || subscription.price <= priceFilter.max);
+          (!this.activeFilters.min ||
+            subscription.price >= this.activeFilters.min) &&
+          (!this.activeFilters.max ||
+            subscription.price <= this.activeFilters.max);
 
         return isSelectedCategory && isSearchMatched && isPriceMatched;
       });
     },
     categories() {
       return this.$subscriptionStore.categories;
-    },
-    selectedPriceFilterConfig() {
-      return (
-        this.priceFilters.find((priceFilter) => {
-          return priceFilter.id === this.selectedPriceFilter;
-        }) ?? this.priceFilters[0]
-      );
-    },
-    selectedPriceFilterLabel() {
-      return this.selectedPriceFilterConfig.label;
-    },
-    activeFiltersCount() {
-      return [
-        this.selectedCategory !== "Все",
-        this.selectedPriceFilter !== "all"
-      ].filter(Boolean).length;
     },
     subscriptionMonthGroups() {
       const groups = new Map<string, SubscriptionMonthGroup>();
@@ -327,9 +177,9 @@ export default defineComponent({
       return nextSubscription ? `${nextSubscription.price} ₽` : "—";
     },
     subscriptionListTitle() {
-      return this.selectedCategory === "Все"
+      return this.activeFilters.category === "Все"
         ? "Все подписки"
-        : this.selectedCategory;
+        : this.activeFilters.category;
     }
   }
 });
