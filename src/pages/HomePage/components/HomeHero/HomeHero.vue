@@ -17,7 +17,7 @@
 
     <article :class="style.summaryCard" @click="$emit('open-statistics')">
       <div :class="style.summaryTop">
-        <span>Будет потрачено в сентябре</span>
+        <span>Будет потрачено в {{ monthLabel }}</span>
         <span :class="style.summaryBadge">Итог месяца</span>
       </div>
 
@@ -27,12 +27,12 @@
       </div>
 
       <div :class="style.progressTrack">
-        <span :class="style.progressBar" />
+        <span :class="style.progressBar" :style="progressStyle" />
       </div>
 
       <div :class="style.summaryBottom">
-        <span>Уже списано 2 178 ₽</span>
-        <span>Осталось 1 069 ₽</span>
+        <span>Уже списано {{ spentTotal }} ₽</span>
+        <span>Осталось {{ remainingTotal }} ₽</span>
       </div>
     </article>
   </section>
@@ -55,6 +55,22 @@ export default defineComponent({
       type: Number,
       required: true
     },
+    monthLabel: {
+      type: String,
+      required: true
+    },
+    progress: {
+      type: Number,
+      required: true
+    },
+    remainingTotal: {
+      type: Number,
+      required: true
+    },
+    spentTotal: {
+      type: Number,
+      required: true
+    },
     total: {
       type: Number,
       required: true
@@ -66,6 +82,13 @@ export default defineComponent({
       notificationsOutline,
       style
     };
+  },
+  computed: {
+    progressStyle() {
+      return {
+        width: `${Math.min(Math.max(this.progress, 0), 100)}%`
+      };
+    }
   }
 });
 </script>

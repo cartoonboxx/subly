@@ -15,128 +15,201 @@
       :breakpoints="[0, 0.92, 1]"
       @didDismiss="handleModalDismiss"
     >
-      <form :class="style.modal" @submit.prevent="saveSubscription">
-        <div :class="style.header">
-          <div>
-            <span :class="style.eyebrow">{{ formEyebrow }}</span>
-            <h2>Подписка</h2>
+      <ion-content :class="style.modalContent">
+        <form :class="style.modal" @submit.prevent="saveSubscription">
+          <div :class="style.header">
+            <div>
+              <span :class="style.eyebrow">{{ formEyebrow }}</span>
+              <h2>{{ formTitle }}</h2>
+            </div>
+
+            <button
+              type="button"
+              :class="style.closeButton"
+              aria-label="Закрыть"
+              @click="requestClose"
+            >
+              <ion-icon :icon="closeOutline" />
+            </button>
           </div>
 
-          <button type="button" :class="style.closeButton" @click="requestClose">
-            Закрыть
-          </button>
+          <section :class="style.formGrid" aria-label="Поля подписки">
+            <div :class="style.fieldSection">
+              <h3>Детали</h3>
+
+              <label :class="style.field">
+                <span>Название</span>
+                <ion-input v-model="name" placeholder="Например, YouTube" />
+              </label>
+
+              <label :class="style.field">
+                <span>Категория</span>
+                <ion-select v-model="categoryId" interface="popover">
+                  <ion-select-option
+                    v-for="category in categories"
+                    :key="category.id"
+                    :value="category.id"
+                  >
+                    {{ category.name }}
+                  </ion-select-option>
+                </ion-select>
+              </label>
+
+              <label :class="style.field">
+                <span>Дата регистрации</span>
+                <button
+                  type="button"
+                  :class="style.dateButton"
+                  @click="openDatePicker"
+                >
+                  <strong>{{ registeredAtLabel }}</strong>
+                  <em>Выбрать в календаре</em>
+                </button>
+              </label>
+            </div>
+
+            <div :class="style.fieldSection">
+              <h3>Списание</h3>
+
+              <label :class="style.field">
+                <span>Стоимость</span>
+                <ion-input
+                  v-model="price"
+                  inputmode="numeric"
+                  placeholder="Цена"
+                  type="number"
+                />
+              </label>
+
+              <label :class="style.field">
+                <span>Период</span>
+                <ion-select v-model="period" interface="popover">
+                  <ion-select-option value="неделя">неделя</ion-select-option>
+                  <ion-select-option value="месяц">месяц</ion-select-option>
+                  <ion-select-option value="3 месяца">
+                    3 месяца
+                  </ion-select-option>
+                  <ion-select-option value="6 месяцев">
+                    6 месяцев
+                  </ion-select-option>
+                  <ion-select-option value="год">год</ion-select-option>
+                </ion-select>
+              </label>
+
+              <label :class="style.field">
+                <span>Напомнить за</span>
+                <ion-input
+                  v-model="reminderDays"
+                  inputmode="numeric"
+                  placeholder="Количество дней"
+                  type="number"
+                />
+              </label>
+            </div>
+          </section>
+
+          <section v-if="isEditMode" :class="style.statusSection">
+            <div>
+              <span>Статус</span>
+              <strong>{{ activityStatusLabel }}</strong>
+            </div>
+
+            <button
+              type="button"
+              :class="[
+                style.statusActionButton,
+                editingIsActive ? style.deactivateButton : style.activateButton
+              ]"
+              @click="toggleSubscriptionActivity"
+            >
+              {{ activityActionLabel }}
+            </button>
+          </section>
+
+          <section :class="style.optionGroup">
+            <div :class="style.groupHeader">
+              <h3>Иконка</h3>
+              <span>{{ selectedIcon.label }}</span>
+            </div>
+
+            <button
+              type="button"
+              :class="style.previewButton"
+              @click="openPicker('icon')"
+            >
+              <span :class="style.previewIcon">
+                <ion-icon :icon="selectedIcon.icon" />
+              </span>
+              <strong>{{ selectedIcon.label }}</strong>
+              <em>Смотреть все</em>
+            </button>
+          </section>
+
+          <section :class="style.optionGroup">
+            <div :class="style.groupHeader">
+              <h3>Цвет</h3>
+              <span>{{ selectedColor.label }}</span>
+            </div>
+
+            <button
+              type="button"
+              :class="style.previewButton"
+              @click="openPicker('color')"
+            >
+              <span :class="[style.previewColor, style[colorClass]]" />
+              <strong>{{ selectedColor.label }}</strong>
+              <em>Смотреть все</em>
+            </button>
+          </section>
+
+          <p v-if="errorMessage" :class="style.errorMessage">
+            {{ errorMessage }}
+          </p>
+
+          <div :class="style.actionPanel">
+            <button
+              type="submit"
+              :class="style.submitButton"
+              :disabled="!canSaveSubscription"
+            >
+              {{ submitButtonLabel }}
+            </button>
+          </div>
+        </form>
+      </ion-content>
+    </ion-modal>
+
+    <ion-modal
+      :is-open="isDatePickerOpen"
+      :initial-breakpoint="0.72"
+      :breakpoints="[0, 0.72, 1]"
+      @didDismiss="closeDatePicker"
+    >
+      <ion-content :class="style.pickerContent">
+        <div :class="style.datePickerModal">
+          <div :class="style.header">
+            <div>
+              <span :class="style.eyebrow">Дата</span>
+              <h2>Регистрация</h2>
+            </div>
+
+            <button
+              type="button"
+              :class="[style.closeButton, style.textButton]"
+              @click="closeDatePicker"
+            >
+              <span>Готово</span>
+            </button>
+          </div>
+
+          <ion-datetime
+            :value="registeredAt"
+            :class="style.calendar"
+            presentation="date"
+            @ionChange="updateRegisteredAt"
+          />
         </div>
-
-        <section :class="style.formGrid">
-          <label :class="style.field">
-            <span>Название</span>
-            <ion-input v-model="name" placeholder="Название" />
-          </label>
-
-          <label :class="style.field">
-            <span>Стоимость</span>
-            <ion-input
-              v-model="price"
-              inputmode="numeric"
-              placeholder="Цена"
-              type="number"
-            />
-          </label>
-
-          <label :class="style.field">
-            <span>День списания</span>
-            <ion-input
-              v-model="day"
-              inputmode="numeric"
-              placeholder="День месяца"
-              type="number"
-            />
-          </label>
-
-          <label :class="style.field">
-            <span>Месяц</span>
-            <ion-select v-model="month" interface="popover">
-              <ion-select-option
-                v-for="monthOption in months"
-                :key="monthOption.value"
-                :value="monthOption.value"
-              >
-                {{ monthOption.label }}
-              </ion-select-option>
-            </ion-select>
-          </label>
-
-          <label :class="style.field">
-            <span>Категория</span>
-            <ion-select v-model="categoryId" interface="popover">
-              <ion-select-option
-                v-for="category in categories"
-                :key="category.id"
-                :value="category.id"
-              >
-                {{ category.name }}
-              </ion-select-option>
-            </ion-select>
-          </label>
-
-          <label :class="style.field">
-            <span>Период</span>
-            <ion-select v-model="period" interface="popover">
-              <ion-select-option value="месяц">месяц</ion-select-option>
-              <ion-select-option value="неделя">неделя</ion-select-option>
-              <ion-select-option value="год">год</ion-select-option>
-            </ion-select>
-          </label>
-        </section>
-
-        <section :class="style.optionGroup">
-          <div :class="style.groupHeader">
-            <h3>Иконка</h3>
-            <span>{{ selectedIcon.label }}</span>
-          </div>
-
-          <button
-            type="button"
-            :class="style.previewButton"
-            @click="openPicker('icon')"
-          >
-            <span :class="style.previewIcon">
-              <ion-icon :icon="selectedIcon.icon" />
-            </span>
-            <strong>{{ selectedIcon.label }}</strong>
-            <em>Смотреть все</em>
-          </button>
-        </section>
-
-        <section :class="style.optionGroup">
-          <div :class="style.groupHeader">
-            <h3>Цвет</h3>
-            <span>{{ selectedColor.label }}</span>
-          </div>
-
-          <button
-            type="button"
-            :class="style.previewButton"
-            @click="openPicker('color')"
-          >
-            <span :class="[style.previewColor, style[colorClass]]" />
-            <strong>{{ selectedColor.label }}</strong>
-            <em>Смотреть все</em>
-          </button>
-        </section>
-
-        <p v-if="errorMessage" :class="style.errorMessage">
-          {{ errorMessage }}
-        </p>
-
-        <button
-          type="submit"
-          :class="style.submitButton"
-          :disabled="!canSaveSubscription"
-        >
-          {{ submitButtonLabel }}
-        </button>
-      </form>
+      </ion-content>
     </ion-modal>
 
     <ion-modal
@@ -155,10 +228,10 @@
 
             <button
               type="button"
-              :class="style.closeButton"
+              :class="[style.closeButton, style.textButton]"
               @click="closePicker"
             >
-              Готово
+              <span>Готово</span>
             </button>
           </div>
 
@@ -203,6 +276,7 @@
 import {
   IonButton,
   IonContent,
+  IonDatetime,
   IonIcon,
   IonInput,
   IonModal,
@@ -221,6 +295,7 @@ import {
   cashOutline,
   cloudOutline,
   codeSlashOutline,
+  closeOutline,
   cubeOutline,
   filmOutline,
   fitnessOutline,
@@ -316,26 +391,12 @@ const colorOptions: ColorOption[] = [
   {id: "slate", label: "Графит"}
 ];
 
-const months = [
-  {label: "Январь", value: "января"},
-  {label: "Февраль", value: "февраля"},
-  {label: "Март", value: "марта"},
-  {label: "Апрель", value: "апреля"},
-  {label: "Май", value: "мая"},
-  {label: "Июнь", value: "июня"},
-  {label: "Июль", value: "июля"},
-  {label: "Август", value: "августа"},
-  {label: "Сентябрь", value: "сентября"},
-  {label: "Октябрь", value: "октября"},
-  {label: "Ноябрь", value: "ноября"},
-  {label: "Декабрь", value: "декабря"}
-];
-
 export default defineComponent({
   name: "AddSubscriptionModal",
   components: {
     IonButton,
     IonContent,
+    IonDatetime,
     IonIcon,
     IonInput,
     IonModal,
@@ -365,22 +426,23 @@ export default defineComponent({
     return {
       addOutline,
       categoryId: this.categories[0]?.id ?? 1,
+      closeOutline,
       colorClass: "green",
       colorOptions,
-      day: "",
       editingIsActive: true,
       editingSubscriptionId: null as number | null,
       errorMessage: "",
       iconId: "youtube",
       iconOptions,
+      isDatePickerOpen: false,
       isModalOpen: false,
       isPickerOpen: false,
-      month: "сентября",
-      months,
       name: "",
       pickerMode: "icon" as PickerMode,
       period: "месяц",
       price: "",
+      reminderDays: "3",
+      registeredAt: this.getTodayIsoDate(),
       style
     };
   },
@@ -406,6 +468,7 @@ export default defineComponent({
       const wasEditingExternalSubscription = Boolean(this.editableSubscription);
 
       this.isModalOpen = false;
+      this.isDatePickerOpen = false;
       this.isPickerOpen = false;
       this.resetForm();
 
@@ -417,6 +480,23 @@ export default defineComponent({
       this.pickerMode = mode;
       this.isPickerOpen = true;
     },
+    openDatePicker() {
+      this.isDatePickerOpen = true;
+    },
+    closeDatePicker() {
+      this.isDatePickerOpen = false;
+    },
+    updateRegisteredAt(
+      event: CustomEvent<{value?: string | string[] | null}>
+    ) {
+      const value = event.detail.value;
+
+      if (typeof value !== "string") {
+        return;
+      }
+
+      this.registeredAt = value.slice(0, 10);
+    },
     closePicker() {
       this.isPickerOpen = false;
     },
@@ -426,19 +506,27 @@ export default defineComponent({
     selectColor(colorClass: string) {
       this.colorClass = colorClass;
     },
+    getTodayIsoDate() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, "0");
+      const day = String(today.getDate()).padStart(2, "0");
+
+      return `${year}-${month}-${day}`;
+    },
     resetForm() {
       this.categoryId = this.categories[0]?.id ?? 1;
       this.colorClass = "green";
-      this.day = "";
       this.editingIsActive = true;
       this.editingSubscriptionId = null;
       this.errorMessage = "";
       this.iconId = "youtube";
-      this.month = "сентября";
       this.name = "";
       this.pickerMode = "icon";
       this.period = "месяц";
       this.price = "";
+      this.reminderDays = "3";
+      this.registeredAt = this.getTodayIsoDate();
     },
     fillForm(subscription: Subscription) {
       const selectedIcon = this.iconOptions.find((iconOption) => {
@@ -447,41 +535,50 @@ export default defineComponent({
       const selectedColor = this.colorOptions.find((colorOption) => {
         return colorOption.id === subscription.colorClass;
       });
-      const dateParts = subscription.date.match(/^(\d{1,2})\s+(.+)$/);
-      const monthValue = dateParts?.[2] ?? this.months[0].value;
-      const selectedMonth = this.months.find((monthOption) => {
-        return monthOption.value === monthValue;
-      });
 
-      this.categoryId = subscription.category?.id ?? this.categories[0]?.id ?? 1;
+      this.categoryId =
+        subscription.category?.id ?? this.categories[0]?.id ?? 1;
       this.colorClass = selectedColor?.id ?? "green";
-      this.day = dateParts?.[1] ?? "";
       this.editingIsActive = subscription.isActive;
       this.editingSubscriptionId = subscription.id;
       this.errorMessage = "";
       this.iconId = selectedIcon?.id ?? "other";
-      this.month = selectedMonth?.value ?? this.months[0].value;
       this.name = subscription.name;
       this.pickerMode = "icon";
       this.period = subscription.period;
       this.price = String(subscription.price);
+      this.reminderDays = String(subscription.reminderDays ?? 3);
+      this.registeredAt = subscription.registeredAt ?? this.getTodayIsoDate();
+    },
+    toggleSubscriptionActivity() {
+      if (!this.editingSubscriptionId) {
+        return;
+      }
+
+      this.$subscriptionStore.updateSubscription(this.editingSubscriptionId, {
+        isActive: !this.editingIsActive
+      });
+      this.requestClose();
     },
     saveSubscription() {
       if (!this.canSaveSubscription) {
-        this.errorMessage = "Заполни название, цену и корректный день списания";
+        this.errorMessage =
+          "Заполни название, дату регистрации, цену и напоминание";
         return;
       }
 
       const category = this.selectedCategory;
+      const reminderDays = Number(this.reminderDays);
       const subscriptionData = {
         category,
         colorClass: this.colorClass,
-        date: `${Number(this.day)} ${this.month}`,
         icon: this.selectedIcon.icon,
         isActive: this.isEditMode ? this.editingIsActive : true,
         name: this.name.trim(),
         period: this.period,
-        price: Number(this.price)
+        price: Number(this.price),
+        registeredAt: this.registeredAt,
+        reminderDays
       };
 
       if (this.isEditMode && this.editingSubscriptionId) {
@@ -522,6 +619,30 @@ export default defineComponent({
     formEyebrow() {
       return this.isEditMode ? "Редактирование" : "Новая";
     },
+    formTitle() {
+      return this.isEditMode ? "Редактирование подписки" : "Новая подписка";
+    },
+    activityActionLabel() {
+      return this.editingIsActive
+        ? "Перевести в неактивные"
+        : "Вернуть в активные";
+    },
+    activityStatusLabel() {
+      return this.editingIsActive ? "Активна" : "Неактивна";
+    },
+    registeredAtLabel() {
+      const registeredAt = new Date(`${this.registeredAt}T00:00:00`);
+
+      if (Number.isNaN(registeredAt.getTime())) {
+        return "Дата не выбрана";
+      }
+
+      return registeredAt.toLocaleDateString("ru-RU", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      });
+    },
     submitButtonLabel() {
       return this.isEditMode ? "Сохранить изменения" : "Добавить подписку";
     },
@@ -529,16 +650,18 @@ export default defineComponent({
       return this.editingSubscriptionId !== null;
     },
     canSaveSubscription() {
-      const day = Number(this.day);
       const price = Number(this.price);
+      const reminderDays = Number(this.reminderDays);
+      const registeredAt = new Date(`${this.registeredAt}T00:00:00`);
 
       return (
         Boolean(this.name.trim()) &&
+        !Number.isNaN(registeredAt.getTime()) &&
         Number.isFinite(price) &&
         price > 0 &&
-        Number.isInteger(day) &&
-        day >= 1 &&
-        day <= 31
+        Number.isInteger(reminderDays) &&
+        reminderDays >= 0 &&
+        reminderDays <= 365
       );
     }
   }

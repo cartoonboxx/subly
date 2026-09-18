@@ -1,8 +1,14 @@
 .toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.searchRow {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 44px;
   gap: 10px;
-  margin-bottom: 12px;
 }
 
 .searchBox {
@@ -30,5 +36,72 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+}
+
+.statusTabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  padding: 4px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.statusTab {
+  display: flex;
+  min-width: 0;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 7px;
+  color: #64748b;
+  background: transparent;
+  font: inherit;
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 800;
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  strong {
+    display: inline-flex;
+    min-width: 20px;
+    height: 20px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    color: #475569;
+    background: #f1f5f9;
+    font-size: 11px;
+    line-height: 1;
+    font-weight: 900;
+  }
+}
+
+.activeStatusTab {
+  color: #166534;
+  background: #dcfce7;
+
+  strong {
+    color: #ffffff;
+    background: #16a34a;
+  }
+}
+
+@media (max-width: 360px) {
+  .statusTab {
+    flex-direction: column;
+    gap: 3px;
+    min-height: 46px;
   }
 }

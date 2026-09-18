@@ -116,6 +116,48 @@
   }
 }
 
+.serviceTitle {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+
+  strong {
+    min-width: 0;
+  }
+}
+
+.statusBadge {
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 900;
+}
+
+.activeBadge {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.inactiveBadge {
+  color: #475569;
+  background: #e2e8f0;
+}
+
 .priceInfo {
   align-items: flex-end;
+}
+
+@media (max-width: 360px) {
+  .serviceTitle {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
 }

@@ -3,16 +3,20 @@
     <SubscriptionHeader :categories="categories" />
 
     <SubscriptionSummary
-      :monthly-total="subscriptionsMonthlyTotal"
+      :monthly-total="activeSubscriptionsMonthlyTotal"
       :next-payment-label="nextPaymentLabel"
-      :subscriptions-count="subscriptions.length"
+      :subscriptions-count="activeSubscriptions.length"
     />
 
     <SubscriptionToolbar
+      :active-count="activeSubscriptions.length"
       :categories="categories"
+      :inactive-count="inactiveSubscriptions.length"
       :search-query="searchQuery"
+      :status-filter="statusFilter"
       :subscriptions-count="subscriptions.length"
       @change-filters="updateFilters"
+      @update:status-filter="updateStatusFilter"
       @update:search-query="updateSearchQuery"
     />
 
@@ -53,6 +57,8 @@ type SubscriptionFilters = {
   max: number | null;
 };
 
+type StatusFilter = "active" | "inactive" | "all";
+
 const calendarMonths = [
   {name: "Январь", dateName: "января"},
   {name: "Февраль", dateName: "февраля"},
@@ -86,12 +92,16 @@ export default defineComponent({
         max: null
       } as SubscriptionFilters,
       editableSubscription: null as Subscription | null,
-      searchQuery: ""
+      searchQuery: "",
+      statusFilter: "active" as StatusFilter
     };
   },
   methods: {
     updateFilters(filters: SubscriptionFilters) {
       this.activeFilters = filters;
+    },
+    updateStatusFilter(statusFilter: StatusFilter) {
+      this.statusFilter = statusFilter;
     },
     updateSearchQuery(query: string | number | null | undefined) {
       this.searchQuery = String(query ?? "");
@@ -114,16 +124,62 @@ export default defineComponent({
             name: calendarMonths[monthIndex].name,
             order: monthIndex
           };
+    },
+    parseSubscriptionDate(date: string) {
+      const normalizedDate = date.trim().toLowerCase();
+      const dateParts = normalizedDate.match(/^(\d{1,2})\s+(.+)$/);
+
+      if (!dateParts) {
+        return null;
+      }
+
+      const day = Number(dateParts[1]);
+      const monthIndex = calendarMonths.findIndex((month) => {
+        return month.dateName === dateParts[2];
+      });
+
+      if (
+        !Number.isInteger(day) ||
+        day < 1 ||
+        day > 31 ||
+        monthIndex === -1
+      ) {
+        return null;
+      }
+
+      return {
+        day,
+        monthIndex
+      };
+    },
+    parseTransactionDate(date: string) {
+      const parsedDate = new Date(`${date}T00:00:00`);
+
+      return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
     }
   },
   computed: {
     allSubscriptions() {
       return this.$subscriptionStore.subscriptions;
     },
+    activeSubscriptions() {
+      return this.allSubscriptions.filter((subscription) => {
+        return subscription.isActive;
+      });
+    },
+    inactiveSubscriptions() {
+      return this.allSubscriptions.filter((subscription) => {
+        return !subscription.isActive;
+      });
+    },
     subscriptions() {
       const normalizedQuery = this.searchQuery.trim().toLowerCase();
 
       return this.allSubscriptions.filter((subscription) => {
+        const isSelectedStatus =
+          this.statusFilter === "all" ||
+          (this.statusFilter === "active" && subscription.isActive) ||
+          (this.statusFilter === "inactive" && !subscription.isActive);
         const isSelectedCategory =
           this.activeFilters.category === "Все" ||
           subscription.category?.name === this.activeFilters.category;
@@ -137,11 +193,28 @@ export default defineComponent({
           (!this.activeFilters.max ||
             subscription.price <= this.activeFilters.max);
 
-        return isSelectedCategory && isSearchMatched && isPriceMatched;
+        return (
+          isSelectedStatus &&
+          isSelectedCategory &&
+          isSearchMatched &&
+          isPriceMatched
+        );
       });
     },
     categories() {
       return this.$subscriptionStore.categories;
+    },
+    currentDate() {
+      return new Date();
+    },
+    currentDay() {
+      return this.currentDate.getDate();
+    },
+    currentMonthIndex() {
+      return this.currentDate.getMonth();
+    },
+    currentYear() {
+      return this.currentDate.getFullYear();
     },
     subscriptionMonthGroups() {
       const groups = new Map<string, SubscriptionMonthGroup>();
@@ -166,20 +239,102 @@ export default defineComponent({
         return firstGroup.order - secondGroup.order;
       });
     },
-    subscriptionsMonthlyTotal() {
-      return this.subscriptions.reduce((total, subscription) => {
-        return total + subscription.price;
-      }, 0);
+    activeSubscriptionsMonthlyTotal() {
+      const spentTotal = this.activeSubscriptions.reduce(
+        (total, subscription) => {
+          const currentMonthTransactions = subscription.transactions.filter(
+            (transaction) => {
+              const transactionDate = this.parseTransactionDate(
+                transaction.date
+              );
+
+              return (
+                transactionDate &&
+                transactionDate.getFullYear() === this.currentYear &&
+                transactionDate.getMonth() === this.currentMonthIndex
+              );
+            }
+          );
+
+          return total + currentMonthTransactions.length * subscription.price;
+        },
+        0
+      );
+      const remainingTotal = this.activeSubscriptions.reduce(
+        (total, subscription) => {
+          const parsedDate = this.parseSubscriptionDate(subscription.date);
+
+          if (
+            !parsedDate ||
+            parsedDate.monthIndex !== this.currentMonthIndex ||
+            parsedDate.day <= this.currentDay
+          ) {
+            return total;
+          }
+
+          return total + subscription.price;
+        },
+        0
+      );
+
+      return spentTotal + remainingTotal;
     },
     nextPaymentLabel() {
-      const nextSubscription = this.subscriptions[0];
+      const nextSubscription = this.activeSubscriptions
+        .map((subscription) => {
+          const parsedDate = this.parseSubscriptionDate(subscription.date);
+
+          return {
+            subscription,
+            parsedDate
+          };
+        })
+        .filter((item): item is {
+          subscription: Subscription;
+          parsedDate: {day: number; monthIndex: number};
+        } => {
+          return item.parsedDate !== null;
+        })
+        .sort((firstItem, secondItem) => {
+          const today = new Date(
+            this.currentYear,
+            this.currentMonthIndex,
+            this.currentDay
+          );
+          const firstDate = new Date(
+            this.currentYear,
+            firstItem.parsedDate.monthIndex,
+            firstItem.parsedDate.day
+          );
+          const secondDate = new Date(
+            this.currentYear,
+            secondItem.parsedDate.monthIndex,
+            secondItem.parsedDate.day
+          );
+
+          if (firstDate < today) {
+            firstDate.setFullYear(this.currentYear + 1);
+          }
+
+          if (secondDate < today) {
+            secondDate.setFullYear(this.currentYear + 1);
+          }
+
+          return firstDate.getTime() - secondDate.getTime();
+        })[0]?.subscription;
 
       return nextSubscription ? `${nextSubscription.price} ₽` : "—";
     },
     subscriptionListTitle() {
+      const statusTitle = {
+        active: "Активные подписки",
+        inactive: "Неактивные подписки",
+        all: "Все подписки"
+      }[this.statusFilter];
+
       return this.activeFilters.category === "Все"
-        ? "Все подписки"
-        : this.activeFilters.category;
+        ? statusTitle
+        : `${statusTitle}: ${this.activeFilters.category}`;
     }
   }
 });

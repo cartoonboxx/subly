@@ -3,14 +3,14 @@
     <StatisticsCard
       :icon="calendarOutline"
       title="Следующее"
-      subtitle="19 сен"
+      :subtitle="nextPaymentLabel"
       @click="$emit('open-statistics')"
     />
 
     <StatisticsCard
       :icon="diamondOutline"
       title="Самая дорогая"
-      :subtitle="`${mostExpensivePrice} ₽`"
+      :subtitle="mostExpensiveLabel"
       @click="$emit('open-statistics')"
     />
   </section>
@@ -28,8 +28,12 @@ export default defineComponent({
     StatisticsCard
   },
   props: {
-    mostExpensivePrice: {
-      type: Number,
+    mostExpensiveLabel: {
+      type: String,
+      required: true
+    },
+    nextPaymentLabel: {
+      type: String,
       required: true
     }
   },

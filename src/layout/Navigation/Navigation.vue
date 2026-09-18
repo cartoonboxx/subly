@@ -9,7 +9,7 @@
         </ion-tab-button>
 
         <ion-tab-button tab="subscriptions" href="/subscriptions">
-          <ion-icon :icon="cardOutline"></ion-icon>
+          <ion-icon :icon="listOutline"></ion-icon>
           <ion-label>Подписки</ion-label>
         </ion-tab-button>
 
@@ -44,8 +44,8 @@ import {
 } from "@ionic/vue";
 import {
   addOutline,
-  cardOutline,
   homeOutline,
+  listOutline,
   settingsOutline,
   statsChartOutline
 } from "ionicons/icons";
@@ -69,10 +69,10 @@ export default defineComponent({
   data() {
     return {
       addOutline,
-      cardOutline,
       homeOutline,
       settingsOutline,
       statsChartOutline,
+      listOutline,
       style
     };
   },

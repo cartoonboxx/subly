@@ -12,8 +12,18 @@
     </div>
 
     <div :class="style.serviceInfo">
-      <strong>{{ subscription.name }}</strong>
-      <span>{{ subscription.date }}</span>
+      <div :class="style.serviceTitle">
+        <strong>{{ subscription.name }}</strong>
+        <span
+          :class="[
+            style.statusBadge,
+            subscription.isActive ? style.activeBadge : style.inactiveBadge
+          ]"
+        >
+          {{ statusLabel }}
+        </span>
+      </div>
+      <span>{{ subscription.date }} · {{ reminderLabel }}</span>
     </div>
 
     <div :class="style.priceInfo">
@@ -46,6 +56,14 @@ export default defineComponent({
     return {
       style
     };
+  },
+  computed: {
+    reminderLabel() {
+      return `напомнить за ${this.subscription.reminderDays} дн.`;
+    },
+    statusLabel() {
+      return this.subscription.isActive ? "Активна" : "Неактивна";
+    }
   },
   methods: {
     selectSubscription() {

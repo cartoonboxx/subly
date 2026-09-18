@@ -38,8 +38,11 @@ import {subscriptionStore} from "@/stores/subscriptionStore";
 
 const pinia = createPinia();
 const app = createApp(App).use(IonicVue).use(router).use(pinia);
+const subscriptions = subscriptionStore(pinia);
 
-app.config.globalProperties.$subscriptionStore = subscriptionStore(pinia);
+subscriptions.normalizeExpiredSubscriptions();
+
+app.config.globalProperties.$subscriptionStore = subscriptions;
 
 router.isReady().then(() => {
   app.mount("#app");
