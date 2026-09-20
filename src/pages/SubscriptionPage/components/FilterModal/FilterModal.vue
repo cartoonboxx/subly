@@ -13,6 +13,8 @@
     </ion-button>
 
     <ion-modal
+      ref="filterModal"
+      :class="style.ionModal"
       :is-open="isFilterModalOpen"
       :initial-breakpoint="0.68"
       :breakpoints="[0, 0.68, 0.96]"

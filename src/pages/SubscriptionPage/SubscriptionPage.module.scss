@@ -38,10 +38,10 @@
   --padding-end: 0;
   --padding-start: 0;
   --padding-top: 0;
-}
 
-.addButton ion-icon {
-  font-size: 22px;
+  ion-icon {
+    font-size: 22px;
+  }
 }
 
 .summaryCard {
@@ -91,27 +91,27 @@
     background: rgba(255, 255, 255, 0.1);
   }
 
-  span {
+  span,
+  strong {
     overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  span {
     color: rgba(255, 255, 255, 0.7);
     font-size: 12px;
     line-height: 1.2;
     font-weight: 700;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   strong {
-    overflow: hidden;
     color: #ffffff;
     font-size: 20px;
     line-height: 1.1;
     font-weight: 800;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 }
-
 
 .toolbar {
   display: grid;

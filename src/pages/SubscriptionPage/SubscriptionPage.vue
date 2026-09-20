@@ -138,12 +138,7 @@ export default defineComponent({
         return month.dateName === dateParts[2];
       });
 
-      if (
-        !Number.isInteger(day) ||
-        day < 1 ||
-        day > 31 ||
-        monthIndex === -1
-      ) {
+      if (!Number.isInteger(day) || day < 1 || day > 31 || monthIndex === -1) {
         return null;
       }
 
@@ -272,6 +267,13 @@ export default defineComponent({
             return total;
           }
 
+          if (
+            subscription.period === "разовая" &&
+            parsedDate.monthIndex !== this.currentMonthIndex
+          ) {
+            return total;
+          }
+
           return total + subscription.price;
         },
         0
@@ -289,12 +291,16 @@ export default defineComponent({
             parsedDate
           };
         })
-        .filter((item): item is {
-          subscription: Subscription;
-          parsedDate: {day: number; monthIndex: number};
-        } => {
-          return item.parsedDate !== null;
-        })
+        .filter(
+          (
+            item
+          ): item is {
+            subscription: Subscription;
+            parsedDate: {day: number; monthIndex: number};
+          } => {
+            return item.parsedDate !== null;
+          }
+        )
         .sort((firstItem, secondItem) => {
           const today = new Date(
             this.currentYear,
@@ -313,14 +319,36 @@ export default defineComponent({
           );
 
           if (firstDate < today) {
+            if (firstItem.subscription.period === "разовая") {
+              return 1;
+            }
+
             firstDate.setFullYear(this.currentYear + 1);
           }
 
           if (secondDate < today) {
+            if (secondItem.subscription.period === "разовая") {
+              return -1;
+            }
+
             secondDate.setFullYear(this.currentYear + 1);
           }
 
           return firstDate.getTime() - secondDate.getTime();
+        })
+        .filter((item) => {
+          const today = new Date(
+            this.currentYear,
+            this.currentMonthIndex,
+            this.currentDay
+          );
+          const itemDate = new Date(
+            this.currentYear,
+            item.parsedDate.monthIndex,
+            item.parsedDate.day
+          );
+
+          return item.subscription.period !== "разовая" || itemDate >= today;
         })[0]?.subscription;
 
       return nextSubscription ? `${nextSubscription.price} ₽` : "—";

@@ -10,6 +10,8 @@
     </ion-button>
 
     <ion-modal
+      ref="modalCreate"
+      :class="style.ionModal"
       :is-open="isModalOpen"
       :initial-breakpoint="0.92"
       :breakpoints="[0, 0.92, 1]"
@@ -39,12 +41,20 @@
 
               <label :class="style.field">
                 <span>Название</span>
-                <ion-input v-model="name" placeholder="Например, YouTube" />
+                <ion-input
+                  v-model="name"
+                  placeholder="Например, YouTube"
+                  @ionFocus="expandCreateModal"
+                />
               </label>
 
               <label :class="style.field">
                 <span>Категория</span>
-                <ion-select v-model="categoryId" interface="popover">
+                <ion-select
+                  v-model="categoryId"
+                  interface="popover"
+                  @ionFocus="expandCreateModal"
+                >
                   <ion-select-option
                     v-for="category in categories"
                     :key="category.id"
@@ -54,6 +64,23 @@
                   </ion-select-option>
                 </ion-select>
               </label>
+
+              <div :class="style.categoryCreate">
+                <ion-input
+                  v-model="newCategoryName"
+                  placeholder="Новая категория"
+                  @ionFocus="expandCreateModal"
+                />
+
+                <button
+                  type="button"
+                  :class="style.categoryCreateButton"
+                  :disabled="!canCreateCategory"
+                  @click="createCategory"
+                >
+                  Добавить
+                </button>
+              </div>
 
               <label :class="style.field">
                 <span>Дата регистрации</span>
@@ -78,12 +105,20 @@
                   inputmode="numeric"
                   placeholder="Цена"
                   type="number"
+                  @ionFocus.self="expandCreateModal"
                 />
               </label>
 
               <label :class="style.field">
                 <span>Период</span>
-                <ion-select v-model="period" interface="popover">
+                <ion-select
+                  v-model="period"
+                  interface="popover"
+                  @ionFocus="expandCreateModal"
+                >
+                  <ion-select-option value="разовая">
+                    разовая
+                  </ion-select-option>
                   <ion-select-option value="неделя">неделя</ion-select-option>
                   <ion-select-option value="месяц">месяц</ion-select-option>
                   <ion-select-option value="3 месяца">
@@ -103,6 +138,7 @@
                   inputmode="numeric"
                   placeholder="Количество дней"
                   type="number"
+                  @ionFocus="expandCreateModal"
                 />
               </label>
             </div>
@@ -180,6 +216,7 @@
     </ion-modal>
 
     <ion-modal
+      :class="style.ionModal"
       :is-open="isDatePickerOpen"
       :initial-breakpoint="0.72"
       :breakpoints="[0, 0.72, 1]"
@@ -213,6 +250,7 @@
     </ion-modal>
 
     <ion-modal
+      :class="style.ionModal"
       :is-open="isPickerOpen"
       :initial-breakpoint="0.82"
       :breakpoints="[0, 0.82, 1]"
@@ -438,6 +476,7 @@ export default defineComponent({
       isModalOpen: false,
       isPickerOpen: false,
       name: "",
+      newCategoryName: "",
       pickerMode: "icon" as PickerMode,
       period: "месяц",
       price: "",
@@ -460,6 +499,12 @@ export default defineComponent({
     openModal() {
       this.resetForm();
       this.isModalOpen = true;
+    },
+    async expandCreateModal() {
+      const modalRef = this.$refs.modalCreate as any;
+      const modal = modalRef.$el as HTMLIonModalElement;
+
+      await modal.setCurrentBreakpoint(1);
     },
     requestClose() {
       this.isModalOpen = false;
@@ -486,9 +531,7 @@ export default defineComponent({
     closeDatePicker() {
       this.isDatePickerOpen = false;
     },
-    updateRegisteredAt(
-      event: CustomEvent<{value?: string | string[] | null}>
-    ) {
+    updateRegisteredAt(event: CustomEvent<{value?: string | string[] | null}>) {
       const value = event.detail.value;
 
       if (typeof value !== "string") {
@@ -506,6 +549,23 @@ export default defineComponent({
     selectColor(colorClass: string) {
       this.colorClass = colorClass;
     },
+    createCategory() {
+      if (!this.canCreateCategory) {
+        return;
+      }
+
+      const category = this.$subscriptionStore.addCategory(
+        this.newCategoryName
+      );
+
+      if (!category) {
+        return;
+      }
+
+      this.categoryId = category.id;
+      this.newCategoryName = "";
+      this.expandCreateModal();
+    },
     getTodayIsoDate() {
       const today = new Date();
       const year = today.getFullYear();
@@ -522,6 +582,7 @@ export default defineComponent({
       this.errorMessage = "";
       this.iconId = "youtube";
       this.name = "";
+      this.newCategoryName = "";
       this.pickerMode = "icon";
       this.period = "месяц";
       this.price = "";
@@ -544,6 +605,7 @@ export default defineComponent({
       this.errorMessage = "";
       this.iconId = selectedIcon?.id ?? "other";
       this.name = subscription.name;
+      this.newCategoryName = "";
       this.pickerMode = "icon";
       this.period = subscription.period;
       this.price = String(subscription.price);
@@ -598,6 +660,11 @@ export default defineComponent({
       return this.categories.find((category) => {
         return category.id === Number(this.categoryId);
       });
+    },
+    canCreateCategory() {
+      const normalizedName = this.newCategoryName.trim();
+
+      return normalizedName.length >= 2;
     },
     selectedIcon() {
       return (

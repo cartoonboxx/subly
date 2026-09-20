@@ -1,3 +1,7 @@
+.ionModal {
+  --border-radius: 20px;
+}
+
 .modalContent {
   --background: #f6f8fb;
 }
@@ -9,7 +13,11 @@
   min-height: 100%;
   padding: 18px 16px calc(22px + var(--ion-safe-area-bottom));
   background:
-    linear-gradient(180deg, rgba(220, 252, 231, 0.72), rgba(246, 248, 251, 0) 172px),
+    linear-gradient(
+      180deg,
+      rgba(220, 252, 231, 0.72),
+      rgba(246, 248, 251, 0) 172px
+    ),
     #f6f8fb;
 }
 
@@ -120,15 +128,14 @@
 
     --padding-end: 12px;
     --padding-start: 12px;
-  }
 
-  ion-input.ion-focused,
-  ion-select.ion-focused {
-    border-color: #22c55e;
-    background: #ffffff;
-    box-shadow:
-      0 0 0 3px rgba(34, 197, 94, 0.13),
-      inset 0 1px 0 rgba(255, 255, 255, 0.88);
+    &.ion-focused {
+      border-color: #22c55e;
+      background: #ffffff;
+      box-shadow:
+        0 0 0 3px rgba(34, 197, 94, 0.13),
+        inset 0 1px 0 rgba(255, 255, 255, 0.88);
+    }
   }
 }
 
@@ -182,6 +189,50 @@
     line-height: 1.2;
     font-style: normal;
     font-weight: 800;
+  }
+}
+
+.categoryCreate {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+
+  ion-input {
+    min-height: 44px;
+    overflow: hidden;
+    border: 1px dashed #cbd5e1;
+    border-radius: 8px;
+    color: #111827;
+    background: #f8fafc;
+    font-size: 14px;
+    font-weight: 700;
+
+    --padding-end: 12px;
+    --padding-start: 12px;
+
+    &.ion-focused {
+      border-color: #22c55e;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.13);
+    }
+  }
+}
+
+.categoryCreateButton {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  color: #ffffff;
+  background: #15803d;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 900;
+
+  &:disabled {
+    color: #94a3b8;
+    background: #e2e8f0;
   }
 }
 
@@ -428,6 +479,12 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
+  &.activeOption {
+    border-color: #15803d;
+    background: #f0fdf4;
+    box-shadow: inset 0 0 0 1px #15803d;
+  }
 }
 
 .colorSwatch {
@@ -437,70 +494,84 @@
   border-radius: 999px;
 }
 
-.green.previewColor,
-.green.colorSwatch,
-.green span {
-  background: #22c55e;
+.green {
+  &.previewColor,
+  &.colorSwatch,
+  span {
+    background: #22c55e;
+  }
 }
 
-.blue.previewColor,
-.blue.colorSwatch,
-.blue span {
-  background: #3b82f6;
+.blue {
+  &.previewColor,
+  &.colorSwatch,
+  span {
+    background: #3b82f6;
+  }
 }
 
-.violet.previewColor,
-.violet.colorSwatch,
-.violet span {
-  background: #8b5cf6;
+.violet {
+  &.previewColor,
+  &.colorSwatch,
+  span {
+    background: #8b5cf6;
+  }
 }
 
-.orange.previewColor,
-.orange.colorSwatch,
-.orange span {
-  background: #f97316;
+.orange {
+  &.previewColor,
+  &.colorSwatch,
+  span {
+    background: #f97316;
+  }
 }
 
-.red.previewColor,
-.red.colorSwatch,
-.red span {
-  background: #f43f5e;
+.red {
+  &.previewColor,
+  &.colorSwatch,
+  span {
+    background: #f43f5e;
+  }
 }
 
-.cyan.previewColor,
-.cyan.colorSwatch,
-.cyan span {
-  background: #06b6d4;
+.cyan {
+  &.previewColor,
+  &.colorSwatch,
+  span {
+    background: #06b6d4;
+  }
 }
 
-.pink.previewColor,
-.pink.colorSwatch,
-.pink span {
-  background: #ec4899;
+.pink {
+  &.previewColor,
+  &.colorSwatch,
+  span {
+    background: #ec4899;
+  }
 }
 
-.amber.previewColor,
-.amber.colorSwatch,
-.amber span {
-  background: #f59e0b;
+.amber {
+  &.previewColor,
+  &.colorSwatch,
+  span {
+    background: #f59e0b;
+  }
 }
 
-.indigo.previewColor,
-.indigo.colorSwatch,
-.indigo span {
-  background: #6366f1;
+.indigo {
+  &.previewColor,
+  &.colorSwatch,
+  span {
+    background: #6366f1;
+  }
 }
 
-.slate.previewColor,
-.slate.colorSwatch,
-.slate span {
-  background: #475569;
-}
-
-.activeOption {
-  border-color: #15803d;
-  background: #f0fdf4;
-  box-shadow: inset 0 0 0 1px #15803d;
+.slate {
+  &.previewColor,
+  &.colorSwatch,
+  span {
+    background: #475569;
+  }
 }
 
 .errorMessage {
@@ -533,10 +604,10 @@
   font: inherit;
   font-size: 15px;
   font-weight: 800;
-}
 
-.submitButton:disabled {
-  color: #94a3b8;
-  background: #e2e8f0;
-  box-shadow: none;
+  &:disabled {
+    color: #94a3b8;
+    background: #e2e8f0;
+    box-shadow: none;
+  }
 }

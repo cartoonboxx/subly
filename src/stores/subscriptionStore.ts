@@ -22,6 +22,9 @@ type ParsedSubscriptionDate = {
 
 type PeriodStep =
   | {
+      unit: "once";
+    }
+  | {
       amount: number;
       unit: "days";
     }
@@ -97,41 +100,44 @@ const formatSubscriptionDate = (date: Date) => {
 };
 
 const getPeriodStep = (period: string): PeriodStep => {
-  if (period === "неделя") {
-    return {
-      amount: 7,
-      unit: "days"
-    };
+  switch (period) {
+    case "разовая":
+      return {
+        unit: "once"
+      };
+    case "неделя":
+      return {
+        amount: 7,
+        unit: "days"
+      };
+    case "3 месяца":
+      return {
+        amount: 3,
+        unit: "months"
+      };
+    case "6 месяцев":
+      return {
+        amount: 6,
+        unit: "months"
+      };
+    case "год":
+      return {
+        amount: 12,
+        unit: "months"
+      };
+    default:
+      return {
+        amount: 1,
+        unit: "months"
+      };
   }
-
-  if (period === "3 месяца") {
-    return {
-      amount: 3,
-      unit: "months"
-    };
-  }
-
-  if (period === "6 месяцев") {
-    return {
-      amount: 6,
-      unit: "months"
-    };
-  }
-
-  if (period === "год") {
-    return {
-      amount: 12,
-      unit: "months"
-    };
-  }
-
-  return {
-    amount: 1,
-    unit: "months"
-  };
 };
 
 const addPeriod = (date: Date, step: PeriodStep, sourceDay: number) => {
+  if (step.unit === "once") {
+    return date;
+  }
+
   if (step.unit === "days") {
     const nextDate = new Date(date);
     nextDate.setDate(nextDate.getDate() + step.amount);
@@ -185,6 +191,17 @@ const buildTransactions = (
   let transactionDate = registrationDate;
   let transactionId = 1;
 
+  if (step.unit === "once") {
+    return registrationDate <= today
+      ? [
+          {
+            id: transactionId,
+            date: formatIsoDate(registrationDate)
+          }
+        ]
+      : [];
+  }
+
   while (transactionDate <= today) {
     transactions.push({
       id: transactionId,
@@ -208,6 +225,10 @@ const getNormalizedPaymentDate = (
   const sourceDay = registrationDate.getDate();
   let paymentDate = registrationDate;
 
+  if (step.unit === "once") {
+    return paymentDate;
+  }
+
   while (paymentDate < today) {
     paymentDate = addPeriod(paymentDate, step, sourceDay);
   }
@@ -215,15 +236,40 @@ const getNormalizedPaymentDate = (
   return paymentDate;
 };
 
+const getOneTimeExpirationDate = (subscription: Subscription) => {
+  const registrationDate = toDateOnly(getRegistrationDate(subscription));
+
+  return addPeriod(
+    registrationDate,
+    {
+      amount: 1,
+      unit: "months"
+    },
+    registrationDate.getDate()
+  );
+};
+
 const syncSubscriptionBilling = (
   subscription: Subscription,
   currentDate = new Date()
 ) => {
   const transactions = buildTransactions(subscription, currentDate);
+  const today = toDateOnly(currentDate);
 
   if (!subscription.isActive) {
     return {
       ...subscription,
+      transactions
+    };
+  }
+
+  if (
+    subscription.period === "разовая" &&
+    getOneTimeExpirationDate(subscription) <= today
+  ) {
+    return {
+      ...subscription,
+      isActive: false,
       transactions
     };
   }
@@ -373,6 +419,46 @@ export const subscriptionStore = defineStore("subscriptions", {
       {
         id: 4,
         name: "Работа"
+      },
+      {
+        id: 5,
+        name: "Игры"
+      },
+      {
+        id: 6,
+        name: "Образование"
+      },
+      {
+        id: 7,
+        name: "AI"
+      },
+      {
+        id: 8,
+        name: "Финансы"
+      },
+      {
+        id: 9,
+        name: "Связь"
+      },
+      {
+        id: 10,
+        name: "Новости"
+      },
+      {
+        id: 11,
+        name: "Здоровье"
+      },
+      {
+        id: 12,
+        name: "Дом"
+      },
+      {
+        id: 13,
+        name: "Покупки"
+      },
+      {
+        id: 14,
+        name: "Другое"
       }
     ]
   }),
@@ -411,6 +497,31 @@ export const subscriptionStore = defineStore("subscriptions", {
       };
 
       this.normalizeExpiredSubscriptions();
+    },
+    addCategory(name: string) {
+      const normalizedName = name.trim();
+
+      if (!normalizedName) {
+        return null;
+      }
+
+      const existingCategory = this.categories.find((category) => {
+        return category.name.toLowerCase() === normalizedName.toLowerCase();
+      });
+
+      if (existingCategory) {
+        return existingCategory;
+      }
+
+      const nextId = Math.max(...this.categories.map((item) => item.id), 0) + 1;
+      const category = {
+        id: nextId,
+        name: normalizedName
+      };
+
+      this.categories.push(category);
+
+      return category;
     },
     normalizeExpiredSubscriptions(currentDate = new Date()) {
       this.subscriptions = this.subscriptions.map((subscription) => {

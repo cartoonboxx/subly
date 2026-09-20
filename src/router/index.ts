@@ -27,6 +27,11 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("@/pages/StatisticsPage/StatisticsPage.vue")
       },
       {
+        path: "statistics/month/:year/:month",
+        component: () =>
+          import("@/pages/StatisticsMonthPage/StatisticsMonthPage.vue")
+      },
+      {
         path: "settings",
         component: () => import("@/pages/SettingsPage/SettingsPage.vue")
       }

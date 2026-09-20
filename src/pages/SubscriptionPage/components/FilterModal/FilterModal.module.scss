@@ -19,10 +19,10 @@
   --padding-end: 0;
   --padding-start: 0;
   --padding-top: 0;
-}
 
-.filterButton ion-icon {
-  font-size: 20px;
+  ion-icon {
+    font-size: 20px;
+  }
 }
 
 .filterBadge {
@@ -40,6 +40,10 @@
   font-size: 10px;
   line-height: 1;
   font-weight: 800;
+}
+
+.ionModal {
+  --border-radius: 20px;
 }
 
 .filterModal {
@@ -136,12 +140,12 @@
   font: inherit;
   font-size: 13px;
   font-weight: 800;
-}
 
-.activeChip {
-  border-color: #15803d;
-  color: #ffffff;
-  background: #15803d;
+  &.activeChip {
+    border-color: #15803d;
+    color: #ffffff;
+    background: #15803d;
+  }
 }
 
 .priceOptions {
@@ -166,6 +170,15 @@
   font: inherit;
   text-align: left;
 
+  &.activePriceOption {
+    border-color: #15803d;
+    background: #f0fdf4;
+
+    strong {
+      color: #15803d;
+    }
+  }
+
   strong {
     overflow: hidden;
     max-width: 100%;
@@ -181,15 +194,6 @@
     font-size: 12px;
     line-height: 1.25;
     font-weight: 700;
-  }
-}
-
-.activePriceOption {
-  border-color: #15803d;
-  background: #f0fdf4;
-
-  strong {
-    color: #15803d;
   }
 }
 

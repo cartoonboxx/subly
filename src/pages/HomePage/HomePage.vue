@@ -104,12 +104,7 @@ export default defineComponent({
         return month.dateName === dateParts[2];
       });
 
-      if (
-        !Number.isInteger(day) ||
-        day < 1 ||
-        day > 31 ||
-        monthIndex === -1
-      ) {
+      if (!Number.isInteger(day) || day < 1 || day > 31 || monthIndex === -1) {
         return null;
       }
 
@@ -136,6 +131,10 @@ export default defineComponent({
         parsedDate.monthIndex,
         parsedDate.day
       );
+
+      if (subscription.period === "разовая") {
+        return paymentDate >= today ? paymentDate : null;
+      }
 
       if (paymentDate < today) {
         paymentDate.setFullYear(currentYear + 1);
@@ -165,9 +164,13 @@ export default defineComponent({
             nextPaymentDate: this.getNextPaymentDate(subscription)
           };
         })
-        .filter((item): item is {subscription: Subscription; nextPaymentDate: Date} => {
-          return item.nextPaymentDate !== null;
-        })
+        .filter(
+          (
+            item
+          ): item is {subscription: Subscription; nextPaymentDate: Date} => {
+            return item.nextPaymentDate !== null;
+          }
+        )
         .sort((firstItem, secondItem) => {
           return (
             firstItem.nextPaymentDate.getTime() -
@@ -240,6 +243,13 @@ export default defineComponent({
           return total;
         }
 
+        if (
+          subscription.period === "разовая" &&
+          parsedDate.monthIndex !== this.currentMonthIndex
+        ) {
+          return total;
+        }
+
         return total + subscription.price;
       }, 0);
     },
@@ -248,7 +258,9 @@ export default defineComponent({
         return 0;
       }
 
-      return Math.round((this.spentMonthlyTotal / this.currentMonthTotal) * 100);
+      return Math.round(
+        (this.spentMonthlyTotal / this.currentMonthTotal) * 100
+      );
     },
     mostExpensiveSub() {
       return this.allSubscriptions.reduce((maxPrice, subscription) => {
