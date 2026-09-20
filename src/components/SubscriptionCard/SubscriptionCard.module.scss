@@ -153,11 +153,3 @@
 .priceInfo {
   align-items: flex-end;
 }
-
-@media (max-width: 360px) {
-  .serviceTitle {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 4px;
-  }
-}

@@ -171,24 +171,3 @@
   gap: 10px;
 }
 
-
-@media (max-width: 360px) {
-  .header h1 {
-    font-size: 30px;
-  }
-
-  .totalRow {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .totalRow strong {
-    font-size: 34px;
-  }
-
-  .serviceIcon {
-    width: 42px;
-    height: 42px;
-  }
-}

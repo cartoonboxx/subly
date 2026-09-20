@@ -65,15 +65,3 @@
     white-space: nowrap;
   }
 }
-
-@media (max-width: 360px) {
-  .summaryTop {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .summaryGrid strong {
-    font-size: 18px;
-  }
-}

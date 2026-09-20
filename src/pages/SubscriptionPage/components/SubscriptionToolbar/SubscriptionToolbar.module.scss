@@ -97,11 +97,3 @@
     background: #16a34a;
   }
 }
-
-@media (max-width: 360px) {
-  .statusTab {
-    flex-direction: column;
-    gap: 3px;
-    min-height: 46px;
-  }
-}
