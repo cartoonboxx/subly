@@ -40,6 +40,12 @@
 import PageContainer from "@/layout/PageContainer/PageContainer.vue";
 import {defineComponent} from "vue";
 import AddSubscriptionModal from "./components/AddSubscriptionModal/AddSubscriptionModal.vue";
+import {
+  calendarMonths,
+  getNextPaymentDate,
+  parseSubscriptionDate,
+  parseTransactionDate
+} from "@/utils/subscriptionBilling";
 import SubscriptionHeader from "./components/SubscriptionHeader/SubscriptionHeader.vue";
 import SubscriptionMonthList from "./components/SubscriptionMonthList/SubscriptionMonthList.vue";
 import SubscriptionSummary from "./components/SubscriptionSummary/SubscriptionSummary.vue";
@@ -58,21 +64,6 @@ type SubscriptionFilters = {
 };
 
 type StatusFilter = "active" | "inactive" | "all";
-
-const calendarMonths = [
-  {name: "Январь", dateName: "января"},
-  {name: "Февраль", dateName: "февраля"},
-  {name: "Март", dateName: "марта"},
-  {name: "Апрель", dateName: "апреля"},
-  {name: "Май", dateName: "мая"},
-  {name: "Июнь", dateName: "июня"},
-  {name: "Июль", dateName: "июля"},
-  {name: "Август", dateName: "августа"},
-  {name: "Сентябрь", dateName: "сентября"},
-  {name: "Октябрь", dateName: "октября"},
-  {name: "Ноябрь", dateName: "ноября"},
-  {name: "Декабрь", dateName: "декабря"}
-];
 
 export default defineComponent({
   name: "SubscriptionPage",
@@ -113,10 +104,7 @@ export default defineComponent({
       this.editableSubscription = null;
     },
     getSubscriptionMonth(date: string) {
-      const normalizedDate = date.toLowerCase();
-      const monthIndex = calendarMonths.findIndex((month) => {
-        return normalizedDate.includes(month.dateName);
-      });
+      const monthIndex = parseSubscriptionDate(date)?.monthIndex ?? -1;
 
       return monthIndex === -1
         ? {name: "Без месяца", order: calendarMonths.length}
@@ -124,33 +112,6 @@ export default defineComponent({
             name: calendarMonths[monthIndex].name,
             order: monthIndex
           };
-    },
-    parseSubscriptionDate(date: string) {
-      const normalizedDate = date.trim().toLowerCase();
-      const dateParts = normalizedDate.match(/^(\d{1,2})\s+(.+)$/);
-
-      if (!dateParts) {
-        return null;
-      }
-
-      const day = Number(dateParts[1]);
-      const monthIndex = calendarMonths.findIndex((month) => {
-        return month.dateName === dateParts[2];
-      });
-
-      if (!Number.isInteger(day) || day < 1 || day > 31 || monthIndex === -1) {
-        return null;
-      }
-
-      return {
-        day,
-        monthIndex
-      };
-    },
-    parseTransactionDate(date: string) {
-      const parsedDate = new Date(`${date}T00:00:00`);
-
-      return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
     }
   },
   computed: {
@@ -239,9 +200,7 @@ export default defineComponent({
         (total, subscription) => {
           const currentMonthTransactions = subscription.transactions.filter(
             (transaction) => {
-              const transactionDate = this.parseTransactionDate(
-                transaction.date
-              );
+              const transactionDate = parseTransactionDate(transaction.date);
 
               return (
                 transactionDate &&
@@ -257,7 +216,7 @@ export default defineComponent({
       );
       const remainingTotal = this.activeSubscriptions.reduce(
         (total, subscription) => {
-          const parsedDate = this.parseSubscriptionDate(subscription.date);
+          const parsedDate = parseSubscriptionDate(subscription.date);
 
           if (
             !parsedDate ||
@@ -282,76 +241,21 @@ export default defineComponent({
       return spentTotal + remainingTotal;
     },
     nextPaymentLabel() {
-      const nextSubscription = this.activeSubscriptions
+      const nextPayment = this.activeSubscriptions
         .map((subscription) => {
-          const parsedDate = this.parseSubscriptionDate(subscription.date);
-
           return {
-            subscription,
-            parsedDate
+            date: getNextPaymentDate(subscription, this.currentDate),
+            subscription
           };
         })
-        .filter(
-          (
-            item
-          ): item is {
-            subscription: Subscription;
-            parsedDate: {day: number; monthIndex: number};
-          } => {
-            return item.parsedDate !== null;
-          }
-        )
-        .sort((firstItem, secondItem) => {
-          const today = new Date(
-            this.currentYear,
-            this.currentMonthIndex,
-            this.currentDay
-          );
-          const firstDate = new Date(
-            this.currentYear,
-            firstItem.parsedDate.monthIndex,
-            firstItem.parsedDate.day
-          );
-          const secondDate = new Date(
-            this.currentYear,
-            secondItem.parsedDate.monthIndex,
-            secondItem.parsedDate.day
-          );
-
-          if (firstDate < today) {
-            if (firstItem.subscription.period === "разовая") {
-              return 1;
-            }
-
-            firstDate.setFullYear(this.currentYear + 1);
-          }
-
-          if (secondDate < today) {
-            if (secondItem.subscription.period === "разовая") {
-              return -1;
-            }
-
-            secondDate.setFullYear(this.currentYear + 1);
-          }
-
-          return firstDate.getTime() - secondDate.getTime();
+        .filter((item): item is {date: Date; subscription: Subscription} => {
+          return item.date !== null;
         })
-        .filter((item) => {
-          const today = new Date(
-            this.currentYear,
-            this.currentMonthIndex,
-            this.currentDay
-          );
-          const itemDate = new Date(
-            this.currentYear,
-            item.parsedDate.monthIndex,
-            item.parsedDate.day
-          );
+        .sort((firstItem, secondItem) => {
+          return firstItem.date.getTime() - secondItem.date.getTime();
+        })[0];
 
-          return item.subscription.period !== "разовая" || itemDate >= today;
-        })[0]?.subscription;
-
-      return nextSubscription ? `${nextSubscription.price} ₽` : "—";
+      return nextPayment ? `${nextPayment.subscription.price} ₽` : "—";
     },
     subscriptionListTitle() {
       const statusTitle = {

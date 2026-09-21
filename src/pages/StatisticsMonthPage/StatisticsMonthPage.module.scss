@@ -251,6 +251,10 @@
   gap: 14px;
   margin-bottom: 22px;
 
+  &:last-child {
+    margin-bottom: 0;
+  }
+
   .sectionHeader {
     display: flex;
     align-items: flex-end;

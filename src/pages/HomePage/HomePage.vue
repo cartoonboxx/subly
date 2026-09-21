@@ -35,35 +35,16 @@
 import PageContainer from "@/layout/PageContainer/PageContainer.vue";
 import {defineComponent} from "vue";
 import AddSubscriptionModal from "@/pages/SubscriptionPage/components/AddSubscriptionModal/AddSubscriptionModal.vue";
+import {
+  calendarMonths,
+  formatShortDate,
+  getNextPaymentDate,
+  parseSubscriptionDate,
+  parseTransactionDate
+} from "@/utils/subscriptionBilling";
 import HomeHero from "./components/HomeHero/HomeHero.vue";
 import HomeStats from "./components/HomeStats/HomeStats.vue";
 import UpcomingSubscriptions from "./components/UpcomingSubscriptions/UpcomingSubscriptions.vue";
-
-type CalendarMonth = {
-  shortLabel: string;
-  label: string;
-  dateName: string;
-};
-
-type ParsedSubscriptionDate = {
-  day: number;
-  monthIndex: number;
-};
-
-const calendarMonths: CalendarMonth[] = [
-  {shortLabel: "янв", label: "январе", dateName: "января"},
-  {shortLabel: "фев", label: "феврале", dateName: "февраля"},
-  {shortLabel: "мар", label: "марте", dateName: "марта"},
-  {shortLabel: "апр", label: "апреле", dateName: "апреля"},
-  {shortLabel: "мая", label: "мае", dateName: "мая"},
-  {shortLabel: "июн", label: "июне", dateName: "июня"},
-  {shortLabel: "июл", label: "июле", dateName: "июля"},
-  {shortLabel: "авг", label: "августе", dateName: "августа"},
-  {shortLabel: "сен", label: "сентябре", dateName: "сентября"},
-  {shortLabel: "окт", label: "октябре", dateName: "октября"},
-  {shortLabel: "ноя", label: "ноябре", dateName: "ноября"},
-  {shortLabel: "дек", label: "декабре", dateName: "декабря"}
-];
 
 export default defineComponent({
   components: {
@@ -90,69 +71,6 @@ export default defineComponent({
     },
     openSubscriptionsPage() {
       this.$router.push("/subscriptions");
-    },
-    parseSubscriptionDate(date: string): ParsedSubscriptionDate | null {
-      const normalizedDate = date.trim().toLowerCase();
-      const dateParts = normalizedDate.match(/^(\d{1,2})\s+(.+)$/);
-
-      if (!dateParts) {
-        return null;
-      }
-
-      const day = Number(dateParts[1]);
-      const monthIndex = calendarMonths.findIndex((month) => {
-        return month.dateName === dateParts[2];
-      });
-
-      if (!Number.isInteger(day) || day < 1 || day > 31 || monthIndex === -1) {
-        return null;
-      }
-
-      return {
-        day,
-        monthIndex
-      };
-    },
-    getNextPaymentDate(subscription: Subscription) {
-      const parsedDate = this.parseSubscriptionDate(subscription.date);
-
-      if (!parsedDate) {
-        return null;
-      }
-
-      const currentYear = this.currentDate.getFullYear();
-      const today = new Date(
-        currentYear,
-        this.currentMonthIndex,
-        this.currentDay
-      );
-      const paymentDate = new Date(
-        currentYear,
-        parsedDate.monthIndex,
-        parsedDate.day
-      );
-
-      if (subscription.period === "разовая") {
-        return paymentDate >= today ? paymentDate : null;
-      }
-
-      if (paymentDate < today) {
-        paymentDate.setFullYear(currentYear + 1);
-      }
-
-      return paymentDate;
-    },
-    getShortPaymentLabel(paymentDate: Date) {
-      const day = paymentDate.getDate();
-      const monthLabel =
-        calendarMonths[paymentDate.getMonth()]?.shortLabel ?? "";
-
-      return monthLabel ? `${day} ${monthLabel}` : `${day}`;
-    },
-    parseTransactionDate(date: string) {
-      const parsedDate = new Date(`${date}T00:00:00`);
-
-      return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
     }
   },
   computed: {
@@ -161,7 +79,7 @@ export default defineComponent({
         .map((subscription) => {
           return {
             subscription,
-            nextPaymentDate: this.getNextPaymentDate(subscription)
+            nextPaymentDate: getNextPaymentDate(subscription, this.currentDate)
           };
         })
         .filter(
@@ -200,11 +118,13 @@ export default defineComponent({
       return this.currentDate.getMonth();
     },
     currentMonthLabel() {
-      return calendarMonths[this.currentMonthIndex]?.label ?? "месяце";
+      return (
+        calendarMonths[this.currentMonthIndex]?.prepositionalName ?? "месяце"
+      );
     },
     currentMonthSubscriptions() {
       return this.allSubscriptions.filter((subscription) => {
-        const parsedDate = this.parseSubscriptionDate(subscription.date);
+        const parsedDate = parseSubscriptionDate(subscription.date);
 
         return parsedDate?.monthIndex === this.currentMonthIndex;
       });
@@ -217,9 +137,7 @@ export default defineComponent({
         (total, subscription) => {
           const currentMonthTransactions = subscription.transactions.filter(
             (transaction) => {
-              const transactionDate = this.parseTransactionDate(
-                transaction.date
-              );
+              const transactionDate = parseTransactionDate(transaction.date);
 
               return (
                 transactionDate &&
@@ -237,7 +155,7 @@ export default defineComponent({
     },
     remainingMonthlyTotal() {
       return this.currentMonthSubscriptions.reduce((total, subscription) => {
-        const parsedDate = this.parseSubscriptionDate(subscription.date);
+        const parsedDate = parseSubscriptionDate(subscription.date);
 
         if (!parsedDate || parsedDate.day <= this.currentDay) {
           return total;
@@ -277,9 +195,12 @@ export default defineComponent({
         return "—";
       }
 
-      const nextPaymentDate = this.getNextPaymentDate(nextSubscription);
+      const nextPaymentDate = getNextPaymentDate(
+        nextSubscription,
+        this.currentDate
+      );
 
-      return nextPaymentDate ? this.getShortPaymentLabel(nextPaymentDate) : "—";
+      return nextPaymentDate ? formatShortDate(nextPaymentDate) : "—";
     }
   }
 });

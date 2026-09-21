@@ -256,54 +256,58 @@
       :breakpoints="[0, 0.82, 1]"
       @didDismiss="closePicker"
     >
-      <ion-content :class="style.pickerContent">
+      <ion-content :class="[style.pickerContent, style.choicePickerContent]">
         <div :class="style.pickerModal">
           <div :class="style.header">
             <div>
               <span :class="style.eyebrow">Выбор</span>
               <h2>{{ pickerTitle }}</h2>
             </div>
-
-            <button
-              type="button"
-              :class="[style.closeButton, style.textButton]"
-              @click="closePicker"
-            >
-              <span>Готово</span>
-            </button>
           </div>
 
-          <section v-if="pickerMode === 'icon'" :class="style.pickerGrid">
-            <button
-              v-for="iconOption in iconOptions"
-              :key="iconOption.id"
-              type="button"
-              :class="[
-                style.pickerOption,
-                iconId === iconOption.id ? style.activeOption : null
-              ]"
-              @click="selectIcon(iconOption.id)"
-            >
-              <ion-icon :icon="iconOption.icon" />
-              <span>{{ iconOption.label }}</span>
-            </button>
-          </section>
+          <div :class="style.pickerBody">
+            <section v-if="pickerMode === 'icon'" :class="style.pickerGrid">
+              <button
+                v-for="iconOption in iconOptions"
+                :key="iconOption.id"
+                type="button"
+                :class="[
+                  style.pickerOption,
+                  iconId === iconOption.id ? style.activeOption : null
+                ]"
+                @click="selectIcon(iconOption.id)"
+              >
+                <ion-icon :icon="iconOption.icon" />
+                <span>{{ iconOption.label }}</span>
+              </button>
+            </section>
 
-          <section v-if="pickerMode === 'color'" :class="style.pickerGrid">
+            <section v-if="pickerMode === 'color'" :class="style.pickerGrid">
+              <button
+                v-for="colorOption in colorOptions"
+                :key="colorOption.id"
+                type="button"
+                :class="[
+                  style.pickerOption,
+                  colorClass === colorOption.id ? style.activeOption : null
+                ]"
+                @click="selectColor(colorOption.id)"
+              >
+                <i :class="[style.colorSwatch, style[colorOption.id]]" />
+                <span>{{ colorOption.label }}</span>
+              </button>
+            </section>
+          </div>
+
+          <div :class="[style.actionPanel, style.pickerActionPanel]">
             <button
-              v-for="colorOption in colorOptions"
-              :key="colorOption.id"
               type="button"
-              :class="[
-                style.pickerOption,
-                colorClass === colorOption.id ? style.activeOption : null
-              ]"
-              @click="selectColor(colorOption.id)"
+              :class="style.submitButton"
+              @click="closePicker"
             >
-              <i :class="[style.colorSwatch, style[colorOption.id]]" />
-              <span>{{ colorOption.label }}</span>
+              Готово
             </button>
-          </section>
+          </div>
         </div>
       </ion-content>
     </ion-modal>
@@ -364,20 +368,9 @@ import {
 } from "ionicons/icons";
 import style from "./AddSubscriptionModal.module.scss";
 
-type IconOption = {
-  id: string;
-  label: string;
-  icon: string;
-};
-
-type ColorOption = {
-  id: string;
-  label: string;
-};
-
 type PickerMode = "icon" | "color";
 
-const iconOptions: IconOption[] = [
+const iconOptions = [
   {id: "youtube", label: "YouTube", icon: logoYoutube},
   {id: "apple", label: "Apple", icon: logoApple},
   {id: "google", label: "Google", icon: logoGoogle},
@@ -416,7 +409,7 @@ const iconOptions: IconOption[] = [
   {id: "other", label: "Другое", icon: appsOutline}
 ];
 
-const colorOptions: ColorOption[] = [
+const colorOptions = [
   {id: "green", label: "Зеленый"},
   {id: "blue", label: "Синий"},
   {id: "violet", label: "Фиолетовый"},

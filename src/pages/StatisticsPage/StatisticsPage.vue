@@ -49,12 +49,6 @@
       />
 
       <StatisticsCard
-        :icon="repeatOutline"
-        title="Средняя"
-        :subtitle="formatCurrency(averageMonthlyCost)"
-      />
-
-      <StatisticsCard
         :icon="trendingUpOutline"
         title="Неактивные"
         :subtitle="`${inactiveSubscriptions.length}`"
@@ -217,26 +211,23 @@ import {IonIcon} from "@ionic/vue";
 import {
   analyticsOutline,
   calendarClearOutline,
-  repeatOutline,
   trendingUpOutline,
   walletOutline
 } from "ionicons/icons";
 import PageContainer from "@/layout/PageContainer/PageContainer.vue";
 import StatisticsCard from "@/components/StatisticsCard/StatisticsCard.vue";
+import {
+  calendarMonths,
+  formatShortDate,
+  getMonthRange,
+  getMonthlyEquivalent,
+  getNextPaymentDate,
+  getOccurrencesInRange,
+  MS_IN_DAY,
+  parseTransactionDate,
+  toDateOnly
+} from "@/utils/subscriptionBilling";
 import style from "./StatisticsPage.module.scss";
-
-type PeriodStep =
-  | {
-      unit: "once";
-    }
-  | {
-      amount: number;
-      unit: "days";
-    }
-  | {
-      amount: number;
-      unit: "months";
-    };
 
 type CategoryStat = {
   name: string;
@@ -269,23 +260,6 @@ type UpcomingPayment = {
   name: string;
 };
 
-const calendarMonths = [
-  {label: "янв", dateName: "января"},
-  {label: "фев", dateName: "февраля"},
-  {label: "мар", dateName: "марта"},
-  {label: "апр", dateName: "апреля"},
-  {label: "май", dateName: "мая"},
-  {label: "июн", dateName: "июня"},
-  {label: "июл", dateName: "июля"},
-  {label: "авг", dateName: "августа"},
-  {label: "сен", dateName: "сентября"},
-  {label: "окт", dateName: "октября"},
-  {label: "ноя", dateName: "ноября"},
-  {label: "дек", dateName: "декабря"}
-];
-
-const MS_IN_DAY = 24 * 60 * 60 * 1000;
-
 export default defineComponent({
   name: "StatisticsPage",
   components: {
@@ -297,35 +271,12 @@ export default defineComponent({
     return {
       analyticsOutline,
       calendarClearOutline,
-      repeatOutline,
       style,
       trendingUpOutline,
       walletOutline
     };
   },
   methods: {
-    addPeriod(date: Date, step: PeriodStep, sourceDay: number) {
-      if (step.unit === "once") {
-        return date;
-      }
-
-      if (step.unit === "days") {
-        const nextDate = new Date(date);
-        nextDate.setDate(nextDate.getDate() + step.amount);
-
-        return nextDate;
-      }
-
-      const nextMonthIndex = date.getMonth() + step.amount;
-      const nextYear = date.getFullYear() + Math.floor(nextMonthIndex / 12);
-      const normalizedMonthIndex = nextMonthIndex % 12;
-
-      return new Date(
-        nextYear,
-        normalizedMonthIndex,
-        Math.min(sourceDay, this.getDaysInMonth(nextYear, normalizedMonthIndex))
-      );
-    },
     barStyle(percent: number) {
       return {
         "--bar-width": `${Math.min(Math.max(percent, 2), 100)}%`
@@ -347,205 +298,12 @@ export default defineComponent({
       return `${Math.round(value).toLocaleString("ru-RU")} ₽`;
     },
     formatPaymentDate(date: Date) {
-      return `${date.getDate()} ${calendarMonths[date.getMonth()].label}`;
-    },
-    getDaysInMonth(year: number, monthIndex: number) {
-      return new Date(year, monthIndex + 1, 0).getDate();
-    },
-    getMonthRange(date: Date) {
-      return {
-        end: this.toDateOnly(
-          new Date(date.getFullYear(), date.getMonth() + 1, 0)
-        ),
-        start: this.toDateOnly(new Date(date.getFullYear(), date.getMonth(), 1))
-      };
-    },
-    getMonthlyEquivalent(subscription: Subscription) {
-      if (subscription.period === "разовая") {
-        return 0;
-      }
-
-      if (subscription.period === "неделя") {
-        return (subscription.price * 52) / 12;
-      }
-
-      if (subscription.period === "3 месяца") {
-        return subscription.price / 3;
-      }
-
-      if (subscription.period === "6 месяцев") {
-        return subscription.price / 6;
-      }
-
-      if (subscription.period === "год") {
-        return subscription.price / 12;
-      }
-
-      return subscription.price;
+      return formatShortDate(date);
     },
     openMonthDetails(month: HistoryMonth) {
       this.$router.push(
         `/statistics/month/${month.year}/${month.monthIndex + 1}`
       );
-    },
-    getNextPaymentDate(subscription: Subscription, fromDate = new Date()) {
-      const registrationDate = this.getRegistrationDate(subscription);
-      const step = this.getPeriodStep(subscription.period);
-      const sourceDay = registrationDate.getDate();
-      const today = this.toDateOnly(fromDate);
-      let paymentDate = this.toDateOnly(registrationDate);
-      let attempts = 0;
-
-      if (step.unit === "once") {
-        return paymentDate >= today ? paymentDate : null;
-      }
-
-      while (paymentDate < today && attempts < 600) {
-        paymentDate = this.addPeriod(paymentDate, step, sourceDay);
-        attempts += 1;
-      }
-
-      return paymentDate;
-    },
-    getOccurrencesInRange(subscription: Subscription, start: Date, end: Date) {
-      const registrationDate = this.toDateOnly(
-        this.getRegistrationDate(subscription)
-      );
-      const step = this.getPeriodStep(subscription.period);
-      const sourceDay = registrationDate.getDate();
-      const occurrences: Date[] = [];
-      let paymentDate = registrationDate;
-      let attempts = 0;
-
-      if (step.unit === "once") {
-        return paymentDate >= start && paymentDate <= end ? [paymentDate] : [];
-      }
-
-      while (paymentDate < start && attempts < 600) {
-        paymentDate = this.addPeriod(paymentDate, step, sourceDay);
-        attempts += 1;
-      }
-
-      while (paymentDate <= end && attempts < 700) {
-        occurrences.push(paymentDate);
-        paymentDate = this.addPeriod(paymentDate, step, sourceDay);
-        attempts += 1;
-      }
-
-      return occurrences;
-    },
-    getPeriodStep(period: string): PeriodStep {
-      if (period === "разовая") {
-        return {
-          unit: "once"
-        };
-      }
-
-      if (period === "неделя") {
-        return {
-          amount: 7,
-          unit: "days"
-        };
-      }
-
-      if (period === "3 месяца") {
-        return {
-          amount: 3,
-          unit: "months"
-        };
-      }
-
-      if (period === "6 месяцев") {
-        return {
-          amount: 6,
-          unit: "months"
-        };
-      }
-
-      if (period === "год") {
-        return {
-          amount: 12,
-          unit: "months"
-        };
-      }
-
-      return {
-        amount: 1,
-        unit: "months"
-      };
-    },
-    getRegistrationDate(subscription: Subscription) {
-      const registeredAt = this.parseIsoDate(subscription.registeredAt);
-
-      if (registeredAt) {
-        return registeredAt;
-      }
-
-      const parsedDate = this.parseSubscriptionDate(subscription.date);
-
-      if (!parsedDate) {
-        return this.currentDate;
-      }
-
-      return new Date(
-        this.currentDate.getFullYear(),
-        parsedDate.monthIndex,
-        parsedDate.day
-      );
-    },
-    parseIsoDate(date: string) {
-      const dateParts = date.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-
-      if (!dateParts) {
-        return null;
-      }
-
-      const year = Number(dateParts[1]);
-      const monthIndex = Number(dateParts[2]) - 1;
-      const day = Number(dateParts[3]);
-      const parsedDate = new Date(year, monthIndex, day);
-
-      if (
-        parsedDate.getFullYear() !== year ||
-        parsedDate.getMonth() !== monthIndex ||
-        parsedDate.getDate() !== day
-      ) {
-        return null;
-      }
-
-      return parsedDate;
-    },
-    parseSubscriptionDate(date: string) {
-      const dateParts = date
-        .trim()
-        .toLowerCase()
-        .match(/^(\d{1,2})\s+(.+)$/);
-
-      if (!dateParts) {
-        return null;
-      }
-
-      const day = Number(dateParts[1]);
-      const monthIndex = calendarMonths.findIndex((month) => {
-        return month.dateName === dateParts[2];
-      });
-
-      if (!Number.isInteger(day) || day < 1 || day > 31 || monthIndex === -1) {
-        return null;
-      }
-
-      return {
-        day,
-        monthIndex
-      };
-    },
-    parseTransactionDate(date: string) {
-      const parsedDate = new Date(`${date}T00:00:00`);
-
-      return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
-    },
-    toDateOnly(date: Date) {
-      return new Date(date.getFullYear(), date.getMonth(), date.getDate());
     }
   },
   computed: {
@@ -553,19 +311,6 @@ export default defineComponent({
       return this.subscriptions.filter((subscription) => {
         return subscription.isActive;
       });
-    },
-    averageMonthlyCost() {
-      const recurringSubscriptionsCount = this.activeSubscriptions.filter(
-        (subscription) => {
-          return this.getMonthlyEquivalent(subscription) > 0;
-        }
-      ).length;
-
-      if (recurringSubscriptionsCount === 0) {
-        return 0;
-      }
-
-      return this.monthlyRunRate / recurringSubscriptionsCount;
     },
     categoryStats(): CategoryStat[] {
       const categoryTotals = new Map<string, number>();
@@ -576,7 +321,7 @@ export default defineComponent({
 
         categoryTotals.set(
           categoryName,
-          currentTotal + this.getMonthlyEquivalent(subscription)
+          currentTotal + getMonthlyEquivalent(subscription)
         );
       });
 
@@ -601,12 +346,13 @@ export default defineComponent({
       return new Date();
     },
     currentMonthTotal() {
-      const {start, end} = this.getMonthRange(this.currentDate);
+      const {start, end} = getMonthRange(this.currentDate);
 
       return this.activeSubscriptions.reduce((total, subscription) => {
         return (
           total +
-          this.getOccurrencesInRange(subscription, start, end).length *
+          getOccurrencesInRange(subscription, start, end, this.currentDate)
+            .length *
             subscription.price
         );
       }, 0);
@@ -620,18 +366,16 @@ export default defineComponent({
         );
       });
       const rawMonths = months.map((monthDate) => {
-        const monthStart = this.toDateOnly(
+        const monthStart = toDateOnly(
           new Date(monthDate.getFullYear(), monthDate.getMonth(), 1)
         );
-        const monthEnd = this.toDateOnly(
+        const monthEnd = toDateOnly(
           new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0)
         );
         const total = this.subscriptions.reduce((monthTotal, subscription) => {
           const monthTransactions = subscription.transactions.filter(
             (transaction) => {
-              const transactionDate = this.parseTransactionDate(
-                transaction.date
-              );
+              const transactionDate = parseTransactionDate(transaction.date);
 
               return (
                 transactionDate &&
@@ -642,12 +386,13 @@ export default defineComponent({
           );
           const predictedTransactions =
             subscription.isActive && monthEnd > this.currentDate
-              ? this.getOccurrencesInRange(
+              ? getOccurrencesInRange(
                   subscription,
                   monthStart,
-                  monthEnd
+                  monthEnd,
+                  this.currentDate
                 ).filter((date) => {
-                  return date > this.toDateOnly(this.currentDate);
+                  return date > toDateOnly(this.currentDate);
                 }).length
               : 0;
 
@@ -660,7 +405,7 @@ export default defineComponent({
 
         return {
           key: `${monthDate.getFullYear()}-${monthDate.getMonth()}`,
-          label: calendarMonths[monthDate.getMonth()].label,
+          label: calendarMonths[monthDate.getMonth()].shortLabel,
           monthIndex: monthDate.getMonth(),
           year: monthDate.getFullYear(),
           total
@@ -682,18 +427,19 @@ export default defineComponent({
     },
     monthlyRunRate() {
       return this.activeSubscriptions.reduce((total, subscription) => {
-        return total + this.getMonthlyEquivalent(subscription);
+        return total + getMonthlyEquivalent(subscription);
       }, 0);
     },
     remainingThisMonth() {
-      const {end} = this.getMonthRange(this.currentDate);
-      const tomorrow = this.toDateOnly(this.currentDate);
+      const {end} = getMonthRange(this.currentDate);
+      const tomorrow = toDateOnly(this.currentDate);
       tomorrow.setDate(tomorrow.getDate() + 1);
 
       return this.activeSubscriptions.reduce((total, subscription) => {
         return (
           total +
-          this.getOccurrencesInRange(subscription, tomorrow, end).length *
+          getOccurrencesInRange(subscription, tomorrow, end, this.currentDate)
+            .length *
             subscription.price
         );
       }, 0);
@@ -705,7 +451,7 @@ export default defineComponent({
       return this.activeSubscriptions.reduce((total, subscription) => {
         const currentMonthTransactions = subscription.transactions.filter(
           (transaction) => {
-            const transactionDate = this.parseTransactionDate(transaction.date);
+            const transactionDate = parseTransactionDate(transaction.date);
 
             return (
               transactionDate &&
@@ -724,14 +470,14 @@ export default defineComponent({
     topSubscriptions(): RankedSubscription[] {
       const maxTotal = Math.max(
         ...this.activeSubscriptions.map((subscription) => {
-          return this.getMonthlyEquivalent(subscription);
+          return getMonthlyEquivalent(subscription);
         }),
         0
       );
 
       return this.activeSubscriptions
         .map((subscription) => {
-          const monthlyTotal = this.getMonthlyEquivalent(subscription);
+          const monthlyTotal = getMonthlyEquivalent(subscription);
 
           return {
             monthlyTotal,
@@ -750,7 +496,10 @@ export default defineComponent({
     upcomingPayments(): UpcomingPayment[] {
       return this.activeSubscriptions
         .map((subscription) => {
-          const paymentDate = this.getNextPaymentDate(subscription);
+          const paymentDate = getNextPaymentDate(
+            subscription,
+            this.currentDate
+          );
 
           if (!paymentDate) {
             return null;
@@ -758,8 +507,7 @@ export default defineComponent({
 
           const daysLeft = Math.max(
             Math.ceil(
-              (paymentDate.getTime() -
-                this.toDateOnly(this.currentDate).getTime()) /
+              (paymentDate.getTime() - toDateOnly(this.currentDate).getTime()) /
                 MS_IN_DAY
             ),
             0
@@ -789,8 +537,16 @@ export default defineComponent({
           );
         })
         .slice(0, 5)
-        .map(({paymentDate, ...payment}) => {
-          return payment;
+        .map((payment) => {
+          return {
+            amount: payment.amount,
+            colorClass: payment.colorClass,
+            dateLabel: payment.dateLabel,
+            daysLabel: payment.daysLabel,
+            icon: payment.icon,
+            id: payment.id,
+            name: payment.name
+          };
         });
     },
     yearlyForecast() {
