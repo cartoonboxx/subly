@@ -1,4 +1,5 @@
 import {defineStore} from "pinia";
+import {subscriptionRepository} from "@/database/repositories/subscription.repository";
 import {
   addPeriod,
   formatIsoDate,
@@ -8,6 +9,73 @@ import {
   parseIsoDate,
   toDateOnly
 } from "@/utils/subscriptionBilling";
+
+const DEFAULT_CATEGORIES: Category[] = [
+  {
+    id: 1,
+    name: "Видео"
+  },
+  {
+    id: 2,
+    name: "Музыка"
+  },
+  {
+    id: 3,
+    name: "Облако"
+  },
+  {
+    id: 4,
+    name: "Работа"
+  },
+  {
+    id: 5,
+    name: "Игры"
+  },
+  {
+    id: 6,
+    name: "Образование"
+  },
+  {
+    id: 7,
+    name: "AI"
+  },
+  {
+    id: 8,
+    name: "Финансы"
+  },
+  {
+    id: 9,
+    name: "Связь"
+  },
+  {
+    id: 10,
+    name: "Новости"
+  },
+  {
+    id: 11,
+    name: "Здоровье"
+  },
+  {
+    id: 12,
+    name: "Дом"
+  },
+  {
+    id: 13,
+    name: "Покупки"
+  },
+  {
+    id: 14,
+    name: "Другое"
+  }
+];
+
+const getDefaultCategories = () => {
+  return DEFAULT_CATEGORIES.map((category) => {
+    return {
+      ...category
+    };
+  });
+};
 
 const getInitialSubscriptionDate = (subscription: CreateSubscriptionInput) => {
   const registeredAt = parseIsoDate(subscription.registeredAt);
@@ -23,7 +91,7 @@ const buildTransactions = (
   const today = toDateOnly(currentDate);
   const step = getPeriodStep(subscription.period);
   const sourceDay = registrationDate.getDate();
-  const transactions: Transactions[] = [];
+  const transactions: Transaction[] = [];
   let transactionDate = registrationDate;
   let transactionId = 1;
 
@@ -124,201 +192,109 @@ const syncSubscriptionBilling = (
 
 export const subscriptionStore = defineStore("subscriptions", {
   state: () => ({
-    // subscriptions: [
-    //   {
-    //     id: 0,
-    //     colorClass: "green",
-    //     icon: playCircleOutline,
-    //     name: "YouTube Premium",
-    //     period: "месяц",
-    //     isActive: true,
-    //     registeredAt: "2026-09-02",
-    //     reminderDays: 3,
-    //     price: 399,
-    //     transactions: [],
-    //     category: {
-    //       id: 1,
-    //       name: "Видео"
-    //     }
-    //   },
-    //   {
-    //     id: 1,
-    //     colorClass: "green",
-    //     icon: playCircleOutline,
-    //     name: "YouTube Premium",
-    //     period: "месяц",
-    //     isActive: true,
-    //     registeredAt: "2026-09-19",
-    //     reminderDays: 3,
-    //     price: 399,
-    //     transactions: [],
-    //     category: {
-    //       id: 1,
-    //       name: "Видео"
-    //     }
-    //   },
-    //   {
-    //     id: 2,
-    //     colorClass: "blue",
-    //     icon: radioOutline,
-    //     name: "Яндекс Плюс",
-    //     period: "месяц",
-    //     isActive: true,
-    //     registeredAt: "2026-09-22",
-    //     reminderDays: 2,
-    //     price: 299,
-    //     transactions: [],
-    //     category: {
-    //       id: 2,
-    //       name: "Музыка"
-    //     }
-    //   },
-    //   {
-    //     id: 3,
-    //     colorClass: "violet",
-    //     icon: cloudOutline,
-    //     name: "iCloud+",
-    //     period: "месяц",
-    //     isActive: true,
-    //     registeredAt: "2026-09-28",
-    //     reminderDays: 5,
-    //     price: 149,
-    //     transactions: [],
-    //     category: {
-    //       id: 3,
-    //       name: "Облако"
-    //     }
-    //   },
-    //   {
-    //     id: 4,
-    //     colorClass: "orange",
-    //     icon: musicalNotesOutline,
-    //     name: "Spotify",
-    //     period: "месяц",
-    //     isActive: true,
-    //     registeredAt: "2026-10-03",
-    //     reminderDays: 3,
-    //     price: 219,
-    //     transactions: [],
-    //     category: {
-    //       id: 2,
-    //       name: "Музыка"
-    //     }
-    //   },
-    //   {
-    //     id: 5,
-    //     colorClass: "red",
-    //     icon: cardOutline,
-    //     name: "Netflix",
-    //     period: "месяц",
-    //     isActive: true,
-    //     registeredAt: "2026-10-07",
-    //     reminderDays: 7,
-    //     price: 899,
-    //     transactions: [],
-    //     category: {
-    //       id: 1,
-    //       name: "Видео"
-    //     }
-    //   },
-    //   {
-    //     id: 6,
-    //     colorClass: "cyan",
-    //     icon: logoFigma,
-    //     name: "Figma Professional",
-    //     period: "месяц",
-    //     isActive: true,
-    //     registeredAt: "2026-10-12",
-    //     reminderDays: 5,
-    //     price: 990,
-    //     transactions: [],
-    //     category: {
-    //       id: 4,
-    //       name: "Работа"
-    //     }
-    //   }
-    // ] as Subscription[],
     subscriptions: [] as Subscription[],
-    categories: [
-      {
-        id: 1,
-        name: "Видео"
-      },
-      {
-        id: 2,
-        name: "Музыка"
-      },
-      {
-        id: 3,
-        name: "Облако"
-      },
-      {
-        id: 4,
-        name: "Работа"
-      },
-      {
-        id: 5,
-        name: "Игры"
-      },
-      {
-        id: 6,
-        name: "Образование"
-      },
-      {
-        id: 7,
-        name: "AI"
-      },
-      {
-        id: 8,
-        name: "Финансы"
-      },
-      {
-        id: 9,
-        name: "Связь"
-      },
-      {
-        id: 10,
-        name: "Новости"
-      },
-      {
-        id: 11,
-        name: "Здоровье"
-      },
-      {
-        id: 12,
-        name: "Дом"
-      },
-      {
-        id: 13,
-        name: "Покупки"
-      },
-      {
-        id: 14,
-        name: "Другое"
-      }
-    ]
+    categories: getDefaultCategories(),
+    errorMessage: "",
+    isInitialized: false,
+    isLoading: false
   }),
   getters: {
     getSubscriptions: (state) => state.subscriptions
   },
   actions: {
-    addSubscription(subscription: CreateSubscriptionInput) {
-      // в будущем убрать, так как будет локальная база данных, где будет это создаваться
-      const nextId =
-        Math.max(...this.subscriptions.map((item) => item.id), 0) + 1;
+    async loadFromDatabase() {
+      this.isLoading = true;
+      this.errorMessage = "";
 
-      const createdSubscription: Subscription = {
+      try {
+        await subscriptionRepository.seedCategories(DEFAULT_CATEGORIES);
+
+        const snapshot = await subscriptionRepository.getSnapshot();
+        const normalizedSubscriptions = snapshot.subscriptions.map(
+          (subscription) => {
+            return syncSubscriptionBilling(subscription);
+          }
+        );
+
+        const syncedSnapshot = await subscriptionRepository.saveSubscriptions(
+          normalizedSubscriptions
+        );
+
+        this.categories = syncedSnapshot.categories;
+        this.subscriptions = syncedSnapshot.subscriptions;
+        this.isInitialized = true;
+      } catch (error) {
+        this.errorMessage = "Не удалось загрузить данные из базы";
+        throw error;
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    async addSubscription(subscription: CreateSubscriptionInput) {
+      const draftSubscription: Subscription = {
         ...subscription,
         date: subscription.date ?? getInitialSubscriptionDate(subscription),
-        id: nextId,
+        id: 0,
         transactions: subscription.transactions ?? []
       };
+      const syncedSubscription = syncSubscriptionBilling(draftSubscription);
 
-      this.subscriptions.push(createdSubscription);
+      try {
+        const createdSubscription =
+          await subscriptionRepository.addSubscription(syncedSubscription);
 
-      this.normalizeExpiredSubscriptions();
+        if (!createdSubscription) {
+          return null;
+        }
+
+        this.subscriptions.push(createdSubscription);
+
+        return createdSubscription;
+      } catch (error) {
+        this.errorMessage = "Не удалось сохранить подписку";
+        throw error;
+      }
     },
-    updateSubscription(id: number, subscription: UpdateSubscriptionInput) {
+
+    async updateSubscription(
+      id: number,
+      subscription: UpdateSubscriptionInput
+    ) {
+      const subscriptionIndex = this.subscriptions.findIndex((item) => {
+        return item.id === id;
+      });
+
+      if (subscriptionIndex === -1) {
+        return null;
+      }
+
+      const updatedSubscription = syncSubscriptionBilling({
+        ...this.subscriptions[subscriptionIndex],
+        ...subscription
+      });
+
+      try {
+        const savedSubscription =
+          await subscriptionRepository.updateSubscription(
+            id,
+            updatedSubscription
+          );
+
+        if (!savedSubscription) {
+          return null;
+        }
+
+        this.subscriptions[subscriptionIndex] = savedSubscription;
+
+        return savedSubscription;
+      } catch (error) {
+        this.errorMessage = "Не удалось обновить подписку";
+        throw error;
+      }
+    },
+
+    async deleteSubscription(id: number) {
       const subscriptionIndex = this.subscriptions.findIndex((item) => {
         return item.id === id;
       });
@@ -327,14 +303,16 @@ export const subscriptionStore = defineStore("subscriptions", {
         return;
       }
 
-      this.subscriptions[subscriptionIndex] = {
-        ...this.subscriptions[subscriptionIndex],
-        ...subscription
-      };
-
-      this.normalizeExpiredSubscriptions();
+      try {
+        await subscriptionRepository.deleteSubscription(id);
+        this.subscriptions.splice(subscriptionIndex, 1);
+      } catch (error) {
+        this.errorMessage = "Не удалось удалить подписку";
+        throw error;
+      }
     },
-    addCategory(name: string) {
+
+    async addCategory(name: string) {
       const normalizedName = name.trim();
 
       if (!normalizedName) {
@@ -349,21 +327,40 @@ export const subscriptionStore = defineStore("subscriptions", {
         return existingCategory;
       }
 
-      const nextId = Math.max(...this.categories.map((item) => item.id), 0) + 1;
-      const category = {
-        id: nextId,
-        name: normalizedName
-      };
+      try {
+        const category =
+          await subscriptionRepository.addCategory(normalizedName);
 
-      this.categories.push(category);
+        if (!category) {
+          return null;
+        }
 
-      return category;
+        this.categories.push(category);
+
+        return category;
+      } catch (error) {
+        this.errorMessage = "Не удалось сохранить категорию";
+        throw error;
+      }
     },
+
     normalizeExpiredSubscriptions(currentDate = new Date()) {
       this.subscriptions = this.subscriptions.map((subscription) => {
         return syncSubscriptionBilling(subscription, currentDate);
       });
     },
+
+    async syncExpiredSubscriptions(currentDate = new Date()) {
+      this.normalizeExpiredSubscriptions(currentDate);
+
+      const snapshot = await subscriptionRepository.saveSubscriptions(
+        this.subscriptions
+      );
+
+      this.categories = snapshot.categories;
+      this.subscriptions = snapshot.subscriptions;
+    },
+
     sumSubscriptions() {
       return this.subscriptions
         .map((item) => item.price)

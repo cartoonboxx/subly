@@ -1,9 +1,11 @@
+import "reflect-metadata";
 import {createApp} from "vue";
 import App from "./App.vue";
 import router from "./router";
 import {createPinia} from "pinia";
 
 import {IonicVue} from "@ionic/vue";
+import {initDatabase} from "@/database/database";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/vue/css/core.css";
@@ -36,14 +38,21 @@ import "@ionic/vue/css/display.css";
 import "./theme/variables.scss";
 import {subscriptionStore} from "@/stores/subscriptionStore";
 
-const pinia = createPinia();
-const app = createApp(App).use(IonicVue).use(router).use(pinia);
-const subscriptions = subscriptionStore(pinia);
+const bootstrap = async () => {
+  await initDatabase();
 
-subscriptions.normalizeExpiredSubscriptions();
+  const pinia = createPinia();
+  const app = createApp(App).use(IonicVue).use(router).use(pinia);
+  const subscriptions = subscriptionStore(pinia);
 
-app.config.globalProperties.$subscriptionStore = subscriptions;
+  await subscriptions.loadFromDatabase();
 
-router.isReady().then(() => {
+  app.config.globalProperties.$subscriptionStore = subscriptions;
+
+  await router.isReady();
   app.mount("#app");
+};
+
+bootstrap().catch((error) => {
+  console.error("Failed to initialize application", error);
 });

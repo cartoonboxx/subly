@@ -12,6 +12,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@capacitor-community/sqlite": "^8.1.1",
     "@capacitor/android": "^8.5.2",
     "@capacitor/app": "8.1.1",
     "@capacitor/core": "8.5.2",
@@ -22,6 +23,8 @@
     "ionicons": "^8.1.0",
     "pinia": "^4.0.3",
     "prettier": "^3.9.7",
+    "reflect-metadata": "^0.2.2",
+    "typeorm": "^1.1.1",
     "vue": "^3.5.0",
     "vue-router": "^5.0.0"
   },
@@ -41,6 +44,9 @@
     "vite": "^8.0.0",
     "vitest": "^4.0.0",
     "vue-tsc": "^2.1.10"
+  },
+  "overrides": {
+    "sql.js": "1.11.0"
   },
   "description": "An Ionic project"
 }

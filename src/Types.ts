@@ -13,7 +13,7 @@ declare global {
     registeredAt: string;
     reminderDays: number;
     category?: Category;
-    transactions: Transactions[];
+    transactions: Transaction[];
   }
 
   type CreateSubscriptionInput = Omit<
@@ -21,7 +21,7 @@ declare global {
     "id" | "date" | "transactions"
   > & {
     date?: string;
-    transactions?: Transactions[];
+    transactions?: Transaction[];
   };
 
   type UpdateSubscriptionInput = Partial<CreateSubscriptionInput>;
@@ -31,7 +31,7 @@ declare global {
     name: string;
   }
 
-  interface Transactions {
+  interface Transaction {
     id: number;
     date: string;
   }

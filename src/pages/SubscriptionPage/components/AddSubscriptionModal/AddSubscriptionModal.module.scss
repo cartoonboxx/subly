@@ -300,6 +300,46 @@
   background: var(--color-success-surface);
 }
 
+.deleteSection {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--layout-stack-gap-md);
+  padding: var(--space-7);
+  border: 1px solid rgba(239, 68, 68, 0.22);
+  border-radius: var(--radius-md);
+  background: rgba(254, 242, 242, 0.72);
+
+  div {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  span {
+    color: var(--color-danger);
+    font-size: var(--font-size-caption);
+    line-height: var(--line-height-tight);
+    font-weight: var(--font-weight-bold);
+  }
+
+  strong {
+    overflow: hidden;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-body);
+    line-height: var(--line-height-tight);
+    font-weight: var(--font-weight-bold);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.deleteActionButton {
+  min-height: var(--control-sm);
+  padding: var(--space-0) var(--space-6);
+}
+
 .groupHeader {
   display: flex;
   align-items: baseline;

@@ -164,6 +164,22 @@
             </UiButton>
           </section>
 
+          <section v-if="isEditMode" :class="style.deleteSection">
+            <div>
+              <span>Удаление</span>
+              <strong>{{ deleteSectionTitle }}</strong>
+            </div>
+
+            <UiButton
+              type="button"
+              variant="dangerSoft"
+              :class="style.deleteActionButton"
+              @click="deleteSubscription"
+            >
+              {{ deleteActionLabel }}
+            </UiButton>
+          </section>
+
           <section :class="style.optionGroup">
             <div :class="style.groupHeader">
               <h3>Иконка</h3>
@@ -383,6 +399,7 @@ export default defineComponent({
       errorMessage: "",
       iconId: "youtube",
       iconOptions,
+      isDeleteConfirmationVisible: false,
       isDatePickerOpen: false,
       isModalOpen: false,
       isPickerOpen: false,
@@ -459,13 +476,14 @@ export default defineComponent({
     },
     selectColor(colorClass: string) {
       this.colorClass = colorClass;
+      this.isDeleteConfirmationVisible = false;
     },
-    createCategory() {
+    async createCategory() {
       if (!this.canCreateCategory) {
         return;
       }
 
-      const category = this.$subscriptionStore.addCategory(
+      const category = await this.$subscriptionStore.addCategory(
         this.newCategoryName
       );
 
@@ -492,6 +510,7 @@ export default defineComponent({
       this.editingSubscriptionId = null;
       this.errorMessage = "";
       this.iconId = "youtube";
+      this.isDeleteConfirmationVisible = false;
       this.name = "";
       this.newCategoryName = "";
       this.pickerMode = "icon";
@@ -515,6 +534,7 @@ export default defineComponent({
       this.editingSubscriptionId = subscription.id;
       this.errorMessage = "";
       this.iconId = selectedIcon?.id ?? "other";
+      this.isDeleteConfirmationVisible = false;
       this.name = subscription.name;
       this.newCategoryName = "";
       this.pickerMode = "icon";
@@ -523,17 +543,35 @@ export default defineComponent({
       this.reminderDays = String(subscription.reminderDays ?? 3);
       this.registeredAt = subscription.registeredAt ?? this.getTodayIsoDate();
     },
-    toggleSubscriptionActivity() {
+    async toggleSubscriptionActivity() {
       if (!this.editingSubscriptionId) {
         return;
       }
 
-      this.$subscriptionStore.updateSubscription(this.editingSubscriptionId, {
-        isActive: !this.editingIsActive
-      });
+      await this.$subscriptionStore.updateSubscription(
+        this.editingSubscriptionId,
+        {
+          isActive: !this.editingIsActive
+        }
+      );
       this.requestClose();
     },
-    saveSubscription() {
+    async deleteSubscription() {
+      if (!this.editingSubscriptionId) {
+        return;
+      }
+
+      if (!this.isDeleteConfirmationVisible) {
+        this.isDeleteConfirmationVisible = true;
+        return;
+      }
+
+      await this.$subscriptionStore.deleteSubscription(
+        this.editingSubscriptionId
+      );
+      this.requestClose();
+    },
+    async saveSubscription() {
       if (!this.canSaveSubscription) {
         this.errorMessage =
           "Заполни название, дату регистрации, цену и напоминание";
@@ -555,12 +593,12 @@ export default defineComponent({
       };
 
       if (this.isEditMode && this.editingSubscriptionId) {
-        this.$subscriptionStore.updateSubscription(
+        await this.$subscriptionStore.updateSubscription(
           this.editingSubscriptionId,
           subscriptionData
         );
       } else {
-        this.$subscriptionStore.addSubscription(subscriptionData);
+        await this.$subscriptionStore.addSubscription(subscriptionData);
       }
 
       this.requestClose();
@@ -607,6 +645,16 @@ export default defineComponent({
     },
     activityStatusLabel() {
       return this.editingIsActive ? "Активна" : "Неактивна";
+    },
+    deleteActionLabel() {
+      return this.isDeleteConfirmationVisible
+        ? "Да, удалить навсегда"
+        : "Удалить навсегда";
+    },
+    deleteSectionTitle() {
+      return this.isDeleteConfirmationVisible
+        ? "Нажми еще раз для подтверждения"
+        : "Удалит подписку и историю списаний";
     },
     registeredAtLabel() {
       const registeredAt = new Date(`${this.registeredAt}T00:00:00`);
