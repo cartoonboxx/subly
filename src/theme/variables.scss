@@ -1,0 +1,244 @@
+/* For information on how to create your own theme, please refer to:
+http://ionicframework.com/docs/theming/ */
+
+body,
+html {
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    /*
+     * Subly design rules.
+     * Keep product tokens prefixed with --* so they can be adopted
+     * gradually without colliding with Ionic variables.
+     */
+
+    /* Core brand palette */
+    --color-brand-50: #f0fdf4;
+    --color-brand-100: #dcfce7;
+    --color-brand-200: #bbf7d0;
+    --color-brand-300: #86efac;
+    --color-brand-400: #4ade80;
+    --color-brand-500: #22c55e;
+    --color-brand-600: #16a34a;
+    --color-brand-700: #15803d;
+    --color-brand-800: #166534;
+    --color-brand-900: #14532d;
+
+    /* Supporting accents for categories, charts and service icons */
+    --color-blue-100: #dbeafe;
+    --color-blue-600: #2563eb;
+    --color-blue-700: #1d4ed8;
+    --color-cyan-100: #cffafe;
+    --color-cyan-600: #0891b2;
+    --color-cyan-700: #0e7490;
+    --color-violet-100: #ede9fe;
+    --color-violet-600: #7c3aed;
+    --color-violet-700: #6d28d9;
+    --color-orange-100: #ffedd5;
+    --color-orange-600: #ea580c;
+    --color-orange-700: #c2410c;
+    --color-red-100: #ffe4e6;
+    --color-red-600: #e11d48;
+    --color-red-700: #be123c;
+    --color-pink-100: #fce7f3;
+    --color-pink-700: #be185d;
+    --color-amber-100: #fef3c7;
+    --color-amber-700: #b45309;
+    --color-indigo-100: #e0e7ff;
+    --color-indigo-700: #4338ca;
+
+    /* Neutral scale */
+    --color-white: #ffffff;
+    --color-slate-50: #f8fafc;
+    --color-slate-100: #f1f5f9;
+    --color-slate-200: #e2e8f0;
+    --color-slate-300: #cbd5e1;
+    --color-slate-400: #94a3b8;
+    --color-slate-500: #64748b;
+    --color-slate-600: #475569;
+    --color-slate-700: #334155;
+    --color-slate-800: #1e293b;
+    --color-slate-900: #0f172a;
+    --color-ink: #111827;
+
+    /* Semantic color roles */
+    --color-background: #f6f8fb;
+    --color-background-muted: var(--color-slate-50);
+    --color-surface: var(--color-white);
+    --color-surface-soft: var(--color-slate-50);
+    --color-text-primary: var(--color-ink);
+    --color-text-secondary: var(--color-slate-500);
+    --color-text-muted: var(--color-slate-400);
+    --color-border: #e5e7eb;
+    --color-border-strong: var(--color-slate-300);
+    --color-focus: rgba(34, 197, 94, 0.24);
+    --color-danger: var(--color-red-700);
+    --color-danger-surface: var(--color-red-100);
+    --color-success: var(--color-brand-800);
+    --color-success-surface: var(--color-brand-100);
+
+    /* Summary surfaces */
+    --gradient-summary-green: radial-gradient(circle at top right, rgba(255, 255, 255, 0.28), transparent 34%),
+        linear-gradient(135deg, #15803d 0%, #16a34a 52%, #0f766e 100%);
+    --gradient-summary-dark: radial-gradient(circle at top right, rgba(255, 255, 255, 0.24), transparent 36%),
+        linear-gradient(135deg, #0f172a 0%, #14532d 100%);
+    --gradient-summary-teal: radial-gradient(circle at top right, rgba(255, 255, 255, 0.24), transparent 36%),
+        linear-gradient(135deg, #0f172a 0%, #14532d 54%, #0e7490 100%);
+    --gradient-primary-action: linear-gradient(135deg, #16a34a, #15803d);
+    --gradient-chart-bar: linear-gradient(90deg, #16a34a, #0891b2);
+    --gradient-chart-column: linear-gradient(180deg, #0ea5e9, #22c55e);
+
+    /* Spacing scale */
+    --space-0: 0;
+    --space-1: 2px;
+    --space-2: 4px;
+    --space-3: 6px;
+    --space-4: 8px;
+    --space-5: 10px;
+    --space-6: 12px;
+    --space-7: 14px;
+    --space-8: 16px;
+    --space-9: 18px;
+    --space-10: 20px;
+    --space-11: 22px;
+    --space-12: 24px;
+    --space-14: 28px;
+    --space-16: 32px;
+    --space-18: 36px;
+    --space-20: 40px;
+
+    /* Layout */
+    --layout-page-max-width: 720px;
+    --layout-page-padding: 20px;
+    --layout-section-gap: 14px;
+    --layout-stack-gap-sm: 10px;
+    --layout-stack-gap-md: 12px;
+    --layout-stack-gap-lg: 18px;
+    --layout-grid-gap: 12px;
+    --layout-bottom-nav-height: 70px;
+
+    /* Radius scale */
+    --radius-xs: 4px;
+    --radius-sm: 7px;
+    --radius-md: 8px;
+    --radius-lg: 10px;
+    --radius-xl: 14px;
+    --radius-modal: 20px;
+    --radius-pill: 999px;
+    --radius-round: 50%;
+
+    /* Borders */
+    --border-width: 1px;
+    --border-style: solid;
+    --border-default: var(--border-width) var(--border-style) var(--color-border);
+    --border-muted: var(--border-width) var(--border-style) var(--color-slate-200);
+    --border-dashed: var(--border-width) dashed var(--color-border-strong);
+
+    /* Shadows */
+    --shadow-none: none;
+    --shadow-surface-sm: 0 8px 20px rgba(15, 23, 42, 0.04);
+    --shadow-surface: 0 8px 24px rgba(15, 23, 42, 0.06);
+    --shadow-surface-hover: 0 12px 28px rgba(15, 23, 42, 0.08);
+    --shadow-panel: 0 10px 28px rgba(15, 23, 42, 0.05);
+    --shadow-summary: 0 16px 34px rgba(15, 23, 42, 0.18);
+    --shadow-summary-green: 0 16px 34px rgba(22, 163, 74, 0.26);
+    --shadow-action: 0 13px 28px rgba(21, 128, 61, 0.24);
+    --shadow-focus: 0 0 0 3px rgba(34, 197, 94, 0.13);
+    --shadow-tabbar: 0 0 8px 1px rgba(0, 0, 0, 0.3);
+
+    /* Typography */
+    --font-family: var(--ion-font-family, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+    --font-size-caption: 12px;
+    --font-size-body: 14px;
+    --font-size-body-lg: 15px;
+    --font-size-title: 16px;
+    --font-size-heading: 22px;
+    --font-size-page-title: 34px;
+    --font-size-display: 40px;
+    --line-height-none: 1;
+    --line-height-tight: 1.15;
+    --line-height-normal: 1.4;
+    --font-weight-regular: 500;
+    --font-weight-medium: 600;
+    --font-weight-semibold: 700;
+    --font-weight-bold: 800;
+    --font-weight-black: 900;
+    --letter-spacing-default: 0;
+
+    /* Component sizing */
+    --control-sm: 34px;
+    --control-md: 44px;
+    --control-lg: 50px;
+    --icon-sm: 34px;
+    --icon-md: 42px;
+    --icon-lg: 46px;
+    --badge-size: 20px;
+    --chart-track-size: 8px;
+
+    /* Motion */
+    --duration-fast: 120ms;
+    --duration-base: 160ms;
+    --duration-slow: 220ms;
+    --ease-standard: ease;
+    --transition-interactive: border-color var(--duration-base) var(--ease-standard),
+        box-shadow var(--duration-base) var(--ease-standard),
+        transform var(--duration-base) var(--ease-standard),
+        background var(--duration-base) var(--ease-standard);
+    --transform-hover-lift: translateY(-1px);
+
+    /* Layering */
+    --z-sticky-action: 10000;
+
+    /* Ionic theme bridge */
+    --ion-color-primary: #22c55e;
+    --ion-color-primary-rgb: 34, 197, 94;
+    --ion-color-primary-contrast: #ffffff;
+    --ion-color-primary-contrast-rgb: 255, 255, 255;
+    --ion-color-primary-shade: #1eac53;
+    --ion-color-primary-tint: #38cb6e;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+label {
+    margin: 0;
+    padding: 0
+}
+
+h1 {
+    font-size: 38px;
+    font-weight: 500;
+}
+
+h2 {
+    font-size: 34px;
+    font-weight: 500;
+}
+
+h3 {
+    font-size: 28px;
+    font-weight: 500;
+}
+
+h4 {
+    font-size: 22px;
+    font-weight: 500;
+}
+
+h5 {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+h6 {
+    font-size: 14px;
+    font-weight: 500;
+}
