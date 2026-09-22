@@ -1,5 +1,5 @@
 <template>
-  <section :class="style.summaryCard">
+  <UiSummaryCard tag="section" :class="style.summaryCard" tone="dark">
     <div :class="style.summaryTop">
       <span>Активные подписки</span>
       <strong>{{ subscriptionsCount }}</strong>
@@ -16,15 +16,19 @@
         <strong>{{ nextPaymentLabel }}</strong>
       </div>
     </div>
-  </section>
+  </UiSummaryCard>
 </template>
 
 <script lang="ts">
 import {defineComponent} from "vue";
+import UiSummaryCard from "@/components/ui/UiSummaryCard/UiSummaryCard.vue";
 import style from "./SubscriptionSummary.module.scss";
 
 export default defineComponent({
   name: "SubscriptionSummary",
+  components: {
+    UiSummaryCard
+  },
   props: {
     monthlyTotal: {
       type: Number,

@@ -72,14 +72,15 @@
                   @ionFocus="expandCreateModal"
                 />
 
-                <button
+                <UiButton
                   type="button"
+                  variant="secondary"
                   :class="style.categoryCreateButton"
                   :disabled="!canCreateCategory"
                   @click="createCategory"
                 >
                   Добавить
-                </button>
+                </UiButton>
               </div>
 
               <label :class="style.field">
@@ -150,8 +151,9 @@
               <strong>{{ activityStatusLabel }}</strong>
             </div>
 
-            <button
+            <UiButton
               type="button"
+              :variant="editingIsActive ? 'dangerSoft' : 'soft'"
               :class="[
                 style.statusActionButton,
                 editingIsActive ? style.deactivateButton : style.activateButton
@@ -159,7 +161,7 @@
               @click="toggleSubscriptionActivity"
             >
               {{ activityActionLabel }}
-            </button>
+            </UiButton>
           </section>
 
           <section :class="style.optionGroup">
@@ -203,13 +205,14 @@
           </p>
 
           <div :class="style.actionPanel">
-            <button
+            <UiButton
               type="submit"
+              maxWidth
               :class="style.submitButton"
               :disabled="!canSaveSubscription"
             >
               {{ submitButtonLabel }}
-            </button>
+            </UiButton>
           </div>
         </form>
       </ion-content>
@@ -300,13 +303,14 @@
           </div>
 
           <div :class="[style.actionPanel, style.pickerActionPanel]">
-            <button
+            <UiButton
               type="button"
+              maxWidth
               :class="style.submitButton"
               @click="closePicker"
             >
               Готово
-            </button>
+            </UiButton>
           </div>
         </div>
       </ion-content>
@@ -326,101 +330,14 @@ import {
   IonSelectOption
 } from "@ionic/vue";
 import {defineComponent, PropType} from "vue";
-import {
-  addOutline,
-  albumsOutline,
-  appsOutline,
-  bagHandleOutline,
-  bookOutline,
-  briefcaseOutline,
-  cardOutline,
-  cashOutline,
-  cloudOutline,
-  codeSlashOutline,
-  closeOutline,
-  cubeOutline,
-  filmOutline,
-  fitnessOutline,
-  gameControllerOutline,
-  globeOutline,
-  heartOutline,
-  homeOutline,
-  logoApple,
-  logoFigma,
-  logoGoogle,
-  logoYoutube,
-  mailOutline,
-  musicalNotesOutline,
-  newspaperOutline,
-  phonePortraitOutline,
-  planetOutline,
-  playCircleOutline,
-  radioOutline,
-  restaurantOutline,
-  schoolOutline,
-  serverOutline,
-  shieldCheckmarkOutline,
-  sparklesOutline,
-  starOutline,
-  tvOutline,
-  walletOutline,
-  wifiOutline
-} from "ionicons/icons";
+import {addOutline, closeOutline} from "ionicons/icons";
+import UiButton from "@/components/ui/UiButton/UiButton.vue";
 import style from "./AddSubscriptionModal.module.scss";
-
-type PickerMode = "icon" | "color";
-
-const iconOptions = [
-  {id: "youtube", label: "YouTube", icon: logoYoutube},
-  {id: "apple", label: "Apple", icon: logoApple},
-  {id: "google", label: "Google", icon: logoGoogle},
-  {id: "figma", label: "Figma", icon: logoFigma},
-  {id: "video", label: "Видео", icon: playCircleOutline},
-  {id: "tv", label: "ТВ", icon: tvOutline},
-  {id: "film", label: "Кино", icon: filmOutline},
-  {id: "music", label: "Музыка", icon: musicalNotesOutline},
-  {id: "radio", label: "Радио", icon: radioOutline},
-  {id: "cloud", label: "Облако", icon: cloudOutline},
-  {id: "server", label: "Сервер", icon: serverOutline},
-  {id: "code", label: "Код", icon: codeSlashOutline},
-  {id: "wallet", label: "Кошелек", icon: walletOutline},
-  {id: "card", label: "Карта", icon: cardOutline},
-  {id: "cash", label: "Деньги", icon: cashOutline},
-  {id: "game", label: "Игры", icon: gameControllerOutline},
-  {id: "book", label: "Книги", icon: bookOutline},
-  {id: "school", label: "Учеба", icon: schoolOutline},
-  {id: "news", label: "Новости", icon: newspaperOutline},
-  {id: "fitness", label: "Спорт", icon: fitnessOutline},
-  {id: "food", label: "Еда", icon: restaurantOutline},
-  {id: "shopping", label: "Покупки", icon: bagHandleOutline},
-  {id: "work", label: "Работа", icon: briefcaseOutline},
-  {id: "phone", label: "Связь", icon: phonePortraitOutline},
-  {id: "wifi", label: "Интернет", icon: wifiOutline},
-  {id: "mail", label: "Почта", icon: mailOutline},
-  {id: "security", label: "Защита", icon: shieldCheckmarkOutline},
-  {id: "home", label: "Дом", icon: homeOutline},
-  {id: "health", label: "Здоровье", icon: heartOutline},
-  {id: "world", label: "Мир", icon: globeOutline},
-  {id: "creative", label: "Творчество", icon: sparklesOutline},
-  {id: "premium", label: "Премиум", icon: starOutline},
-  {id: "space", label: "Космос", icon: planetOutline},
-  {id: "archive", label: "Коллекция", icon: albumsOutline},
-  {id: "service", label: "Сервис", icon: cubeOutline},
-  {id: "other", label: "Другое", icon: appsOutline}
-];
-
-const colorOptions = [
-  {id: "green", label: "Зеленый"},
-  {id: "blue", label: "Синий"},
-  {id: "violet", label: "Фиолетовый"},
-  {id: "orange", label: "Оранжевый"},
-  {id: "red", label: "Красный"},
-  {id: "cyan", label: "Голубой"},
-  {id: "pink", label: "Розовый"},
-  {id: "amber", label: "Янтарный"},
-  {id: "indigo", label: "Индиго"},
-  {id: "slate", label: "Графит"}
-];
+import {
+  PickerMode,
+  colorOptions,
+  iconOptions
+} from "@/pages/SubscriptionPage/components/AddSubscriptionModal/utils";
 
 export default defineComponent({
   name: "AddSubscriptionModal",
@@ -432,7 +349,8 @@ export default defineComponent({
     IonInput,
     IonModal,
     IonSelect,
-    IonSelectOption
+    IonSelectOption,
+    UiButton
   },
   props: {
     buttonClass: {

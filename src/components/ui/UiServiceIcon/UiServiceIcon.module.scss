@@ -1,0 +1,81 @@
+.serviceIcon {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 8px;
+
+  ion-icon {
+    font-size: var(--service-icon-size);
+  }
+}
+
+.sm {
+  width: 34px;
+  height: 34px;
+
+  --service-icon-size: 18px;
+}
+
+.md {
+  width: 42px;
+  height: 42px;
+
+  --service-icon-size: 21px;
+}
+
+.lg {
+  width: 46px;
+  height: 46px;
+
+  --service-icon-size: 22px;
+}
+
+.green {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.blue {
+  color: #1d4ed8;
+  background: #dbeafe;
+}
+
+.violet {
+  color: #6d28d9;
+  background: #ede9fe;
+}
+
+.orange {
+  color: #c2410c;
+  background: #ffedd5;
+}
+
+.red {
+  color: #be123c;
+  background: #ffe4e6;
+}
+
+.cyan {
+  color: #0e7490;
+  background: #cffafe;
+}
+
+.pink {
+  color: #be185d;
+  background: #fce7f3;
+}
+
+.amber {
+  color: #b45309;
+  background: #fef3c7;
+}
+
+.indigo {
+  color: #4338ca;
+  background: #e0e7ff;
+}
+
+.slate {
+  color: #334155;
+  background: #e2e8f0;
+}

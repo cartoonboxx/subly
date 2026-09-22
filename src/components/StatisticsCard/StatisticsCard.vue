@@ -1,21 +1,23 @@
 <template>
-  <article :class="style.statCard">
-    <span :class="style.statIcon">
-      <ion-icon :icon="icon" />
-    </span>
+  <UiCard tag="article" :class="style.statCard">
+    <UiServiceIcon :icon="icon" size="sm" />
     <span>{{ title }}</span>
     <strong>{{ subtitle }}</strong>
-  </article>
+  </UiCard>
 </template>
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import {IonIcon} from "@ionic/vue";
+import UiCard from "@/components/ui/UiCard/UiCard.vue";
+import UiServiceIcon from "@/components/ui/UiServiceIcon/UiServiceIcon.vue";
 import style from "./StatisticsCard.module.scss";
 
 export default defineComponent({
   name: "StatisticsCard",
-  components: {IonIcon},
+  components: {
+    UiCard,
+    UiServiceIcon
+  },
   props: {
     icon: {
       type: String,

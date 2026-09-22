@@ -1,27 +1,27 @@
 <template>
-  <article
+  <UiCard
     :key="subscription.name"
-    :class="[style.subscriptionItem, isInteractive ? style.interactive : null]"
+    tag="article"
+    padding="sm"
+    :class="style.subscriptionItem"
+    :interactive="isInteractive"
     :tabindex="isInteractive ? 0 : undefined"
     @click="selectSubscription"
     @keydown.enter="selectSubscription"
     @keydown.space.prevent="selectSubscription"
   >
-    <div :class="[style.serviceIcon, style[subscription.colorClass]]">
-      <ion-icon :icon="subscription.icon" />
-    </div>
+    <UiServiceIcon
+      :color-class="subscription.colorClass"
+      :icon="subscription.icon"
+      size="lg"
+    />
 
     <div :class="style.serviceInfo">
       <div :class="style.serviceTitle">
         <strong>{{ subscription.name }}</strong>
-        <span
-          :class="[
-            style.statusBadge,
-            subscription.isActive ? style.activeBadge : style.inactiveBadge
-          ]"
-        >
+        <UiBadge :tone="subscription.isActive ? 'success' : 'neutral'">
           {{ statusLabel }}
-        </span>
+        </UiBadge>
       </div>
       <span>{{ subscription.date }} · {{ reminderLabel }}</span>
     </div>
@@ -30,17 +30,23 @@
       <strong>{{ subscription.price }} ₽</strong>
       <span>{{ subscription.period }}</span>
     </div>
-  </article>
+  </UiCard>
 </template>
 
 <script lang="ts">
 import {defineComponent, PropType} from "vue";
-import {IonIcon} from "@ionic/vue";
+import UiBadge from "@/components/ui/UiBadge/UiBadge.vue";
+import UiCard from "@/components/ui/UiCard/UiCard.vue";
+import UiServiceIcon from "@/components/ui/UiServiceIcon/UiServiceIcon.vue";
 import style from "./SubscriptionCard.module.scss";
 
 export default defineComponent({
   name: "SubscriptionCard",
-  components: {IonIcon},
+  components: {
+    UiBadge,
+    UiCard,
+    UiServiceIcon
+  },
   props: {
     isInteractive: {
       type: Boolean,

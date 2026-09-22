@@ -3,51 +3,9 @@
   flex-direction: column;
   gap: 18px;
   margin-bottom: 16px;
-
-  .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 4px 2px 0;
-
-    h1 {
-      margin-top: 2px;
-      color: #111827;
-      font-size: 34px;
-      line-height: 1.05;
-      font-weight: 700;
-    }
-  }
-}
-
-.eyebrow {
-  display: block;
-  color: #64748b;
-  font-size: 12px;
-  line-height: 1.2;
-  font-weight: 700;
-  letter-spacing: 0;
-  text-transform: uppercase;
 }
 
 .summaryCard {
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  padding: 18px;
-  border-radius: 8px;
-  color: #ffffff;
-  background:
-    radial-gradient(
-      circle at top right,
-      rgba(255, 255, 255, 0.24),
-      transparent 36%
-    ),
-    linear-gradient(135deg, #0f172a 0%, #14532d 54%, #0e7490 100%);
-  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.18);
-
   .summaryTop,
   .totalRow {
     display: flex;
@@ -60,16 +18,6 @@
     color: rgba(255, 255, 255, 0.82);
     font-size: 14px;
     font-weight: 700;
-  }
-
-  .summaryBadge {
-    flex: 0 0 auto;
-    padding: 7px 10px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 999px;
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.12);
-    font-size: 12px;
   }
 
   .totalRow {
@@ -146,20 +94,6 @@
     margin-bottom: 0;
   }
 
-  .sectionHeader {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 16px;
-
-    h2 {
-      margin-top: 4px;
-      color: #111827;
-      font-size: 22px;
-      line-height: 1.15;
-      font-weight: 800;
-    }
-  }
 }
 
 .categoryList,
@@ -170,24 +104,11 @@
   gap: 10px;
 }
 
-.barItem,
-.rankedItem,
-.paymentItem,
-.insightCard,
-.emptyState,
-.compactEmpty {
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  background: #ffffff;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-}
-
 .barItem {
   display: flex;
   min-width: 0;
   flex-direction: column;
   gap: 9px;
-  padding: 14px;
 
   .barTop {
     display: flex;
@@ -247,11 +168,6 @@
   gap: 8px;
   min-height: 174px;
   overflow-x: auto;
-  padding: 14px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  background: #ffffff;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
   scrollbar-width: thin;
 
   .monthColumn {
@@ -400,50 +316,6 @@
   }
 }
 
-.serviceIcon {
-  display: grid;
-  width: 42px;
-  height: 42px;
-  place-items: center;
-  border-radius: 8px;
-  color: #166534;
-  background: #dcfce7;
-
-  ion-icon {
-    font-size: 21px;
-  }
-
-  &.green {
-    color: #166534;
-    background: #dcfce7;
-  }
-
-  &.blue {
-    color: #1d4ed8;
-    background: #dbeafe;
-  }
-
-  &.violet {
-    color: #6d28d9;
-    background: #ede9fe;
-  }
-
-  &.orange {
-    color: #c2410c;
-    background: #ffedd5;
-  }
-
-  &.red {
-    color: #b91c1c;
-    background: #fee2e2;
-  }
-
-  &.cyan {
-    color: #0e7490;
-    background: #cffafe;
-  }
-}
-
 .amountInfo {
   display: flex;
   min-width: 0;
@@ -518,54 +390,6 @@
       font-weight: 900;
     }
   }
-}
-
-.emptyState {
-  display: flex;
-  min-height: 320px;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 28px 18px;
-  text-align: center;
-
-  .emptyIcon {
-    display: grid;
-    width: 52px;
-    height: 52px;
-    place-items: center;
-    border-radius: 8px;
-    color: #166534;
-    background: #dcfce7;
-
-    ion-icon {
-      font-size: 26px;
-    }
-  }
-
-  h2 {
-    color: #111827;
-    font-size: 22px;
-    line-height: 1.15;
-    font-weight: 900;
-  }
-
-  p {
-    max-width: 320px;
-    color: #64748b;
-    font-size: 14px;
-    line-height: 1.45;
-    font-weight: 600;
-  }
-}
-
-.compactEmpty {
-  padding: 16px;
-  color: #64748b;
-  font-size: 14px;
-  font-weight: 700;
-  text-align: center;
 }
 
 @media (max-width: 390px) {

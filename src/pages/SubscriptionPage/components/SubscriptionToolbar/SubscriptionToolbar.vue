@@ -18,7 +18,12 @@
       />
     </div>
 
-    <div :class="style.statusTabs" aria-label="Статус подписок">
+    <UiCard
+      tag="div"
+      padding="none"
+      :class="style.statusTabs"
+      aria-label="Статус подписок"
+    >
       <button
         v-for="statusOption in statusOptions"
         :key="statusOption.value"
@@ -32,7 +37,7 @@
         <span>{{ statusOption.label }}</span>
         <strong>{{ statusOption.count }}</strong>
       </button>
-    </div>
+    </UiCard>
   </section>
 </template>
 
@@ -41,6 +46,7 @@ import {IonIcon, IonInput} from "@ionic/vue";
 import {defineComponent, PropType} from "vue";
 import {searchOutline} from "ionicons/icons";
 import FilterModal from "../FilterModal/FilterModal.vue";
+import UiCard from "@/components/ui/UiCard/UiCard.vue";
 import style from "./SubscriptionToolbar.module.scss";
 
 type StatusFilter = "active" | "inactive" | "all";
@@ -50,7 +56,8 @@ export default defineComponent({
   components: {
     FilterModal,
     IonIcon,
-    IonInput
+    IonInput,
+    UiCard
   },
   props: {
     categories: {

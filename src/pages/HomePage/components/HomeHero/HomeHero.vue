@@ -1,24 +1,20 @@
 <template>
   <section :class="style.hero">
-    <div :class="style.header">
-      <div>
-        <span :class="style.eyebrow">Subly</span>
-        <h1>Главная</h1>
-      </div>
+    <UiPageHeader eyebrow="Subly" title="Главная">
+      <template #action>
+        <UiIconButton :icon="notificationsOutline" label="Уведомления" />
+      </template>
+    </UiPageHeader>
 
-      <ion-button
-        fill="clear"
-        :class="style.iconButton"
-        aria-label="Уведомления"
-      >
-        <ion-icon :icon="notificationsOutline" />
-      </ion-button>
-    </div>
-
-    <article :class="style.summaryCard" @click="$emit('open-statistics')">
+    <UiSummaryCard
+      interactive
+      :class="style.summaryCard"
+      tone="green"
+      @click="$emit('open-statistics')"
+    >
       <div :class="style.summaryTop">
         <span>Будет потрачено в {{ monthLabel }}</span>
-        <span :class="style.summaryBadge">Итог месяца</span>
+        <UiBadge tone="glass">Итог месяца</UiBadge>
       </div>
 
       <div :class="style.totalRow">
@@ -34,21 +30,26 @@
         <span>Уже списано {{ spentTotal }} ₽</span>
         <span>Осталось {{ remainingTotal }} ₽</span>
       </div>
-    </article>
+    </UiSummaryCard>
   </section>
 </template>
 
 <script lang="ts">
-import {IonButton, IonIcon} from "@ionic/vue";
 import {defineComponent} from "vue";
 import {notificationsOutline} from "ionicons/icons";
+import UiBadge from "@/components/ui/UiBadge/UiBadge.vue";
+import UiIconButton from "@/components/ui/UiIconButton/UiIconButton.vue";
+import UiPageHeader from "@/components/ui/UiPageHeader/UiPageHeader.vue";
+import UiSummaryCard from "@/components/ui/UiSummaryCard/UiSummaryCard.vue";
 import style from "./HomeHero.module.scss";
 
 export default defineComponent({
   name: "HomeHero",
   components: {
-    IonButton,
-    IonIcon
+    UiBadge,
+    UiIconButton,
+    UiPageHeader,
+    UiSummaryCard
   },
   props: {
     subscriptionsCount: {

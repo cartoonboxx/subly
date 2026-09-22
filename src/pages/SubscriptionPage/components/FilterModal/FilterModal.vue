@@ -1,16 +1,11 @@
 <template>
   <div :class="style.filterControl">
-    <ion-button
-      fill="clear"
-      :class="style.filterButton"
-      aria-label="Фильтры"
+    <UiIconButton
+      :badge="activeFiltersCount || ''"
+      :icon="optionsOutline"
+      label="Фильтры"
       @click="openFilterModal"
-    >
-      <ion-icon :icon="optionsOutline" />
-      <span v-if="activeFiltersCount" :class="style.filterBadge">
-        {{ activeFiltersCount }}
-      </span>
-    </ion-button>
+    />
 
     <ion-modal
       ref="filterModal"
@@ -27,9 +22,9 @@
             <h2>Фильтры</h2>
           </div>
 
-          <button :class="style.modalCloseButton" @click="closeFilterModal">
+          <UiButton variant="soft" @click="closeFilterModal">
             Готово
-          </button>
+          </UiButton>
         </div>
 
         <section :class="style.filterGroup">
@@ -88,13 +83,13 @@
         </section>
 
         <div :class="style.filterModalActions">
-          <button :class="style.resetFiltersButton" @click="resetFilters">
+          <UiButton variant="neutral" @click="resetFilters">
             Сбросить
-          </button>
+          </UiButton>
 
-          <button :class="style.applyFiltersButton" @click="closeFilterModal">
+          <UiButton variant="secondary" @click="closeFilterModal">
             Показать {{ subscriptionsCount }}
-          </button>
+          </UiButton>
         </div>
       </div>
     </ion-modal>
@@ -102,27 +97,23 @@
 </template>
 
 <script lang="ts">
-import {IonButton, IonIcon, IonModal} from "@ionic/vue";
+import {IonModal} from "@ionic/vue";
 import {defineComponent, PropType} from "vue";
 import {optionsOutline} from "ionicons/icons";
+import UiButton from "@/components/ui/UiButton/UiButton.vue";
+import UiIconButton from "@/components/ui/UiIconButton/UiIconButton.vue";
 import style from "./FilterModal.module.scss";
-
-type PriceFilterId = "all" | "cheap" | "middle" | "expensive";
-
-type PriceFilter = {
-  id: PriceFilterId;
-  label: string;
-  description: string;
-  min: number | null;
-  max: number | null;
-};
+import {
+  PriceFilter,
+  PriceFilterId
+} from "@/pages/SubscriptionPage/components/FilterModal/utils";
 
 export default defineComponent({
   name: "FilterModal",
   components: {
-    IonButton,
-    IonIcon,
-    IonModal
+    IonModal,
+    UiButton,
+    UiIconButton
   },
   props: {
     categories: {

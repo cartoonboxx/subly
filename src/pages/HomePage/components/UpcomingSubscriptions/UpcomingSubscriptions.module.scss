@@ -1,43 +1,13 @@
-.eyebrow {
-  display: block;
-  color: #64748b;
-  font-size: 12px;
-  line-height: 1.2;
-  font-weight: 700;
-  letter-spacing: 0;
-  text-transform: uppercase;
-}
-
 .section {
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
 
-.sectionHeader {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-
-  h2 {
-    margin-top: 4px;
-    color: #111827;
-    font-size: 22px;
-    line-height: 1.15;
-    font-weight: 800;
-  }
-}
-
 .buttonAll {
   min-height: 34px;
-  margin: 0 -8px 0 0;
-
-  --border-radius: 10px;
-  --box-shadow: none;
-  --color: #15803d;
-  --padding-end: 8px;
-  --padding-start: 8px;
+  padding: 0 10px;
+  font-size: 13px;
 }
 
 .subscriptionList {

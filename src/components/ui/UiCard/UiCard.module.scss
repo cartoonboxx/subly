@@ -1,0 +1,42 @@
+.card {
+  min-width: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.paddingNone {
+  padding: 0;
+}
+
+.paddingSm {
+  padding: 12px;
+}
+
+.paddingMd {
+  padding: 14px;
+}
+
+.dashed {
+  border-style: dashed;
+  color: #64748b;
+  background: #f8fafc;
+  box-shadow: none;
+}
+
+.interactive {
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: #86efac;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+    outline: 0;
+    transform: translateY(-1px);
+  }
+}

@@ -1,0 +1,32 @@
+.sectionHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+
+  h2 {
+    margin-top: 4px;
+    color: #111827;
+    font-size: 22px;
+    line-height: 1.15;
+    font-weight: 800;
+  }
+
+  :global(.ui-section-meta) {
+    flex: 0 0 auto;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.2;
+    font-weight: 700;
+  }
+}
+
+.eyebrow {
+  display: block;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}

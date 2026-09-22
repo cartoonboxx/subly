@@ -37,33 +37,24 @@
 </template>
 
 <script lang="ts">
-import PageContainer from "@/layout/PageContainer/PageContainer.vue";
 import {defineComponent} from "vue";
+import PageContainer from "@/layout/PageContainer/PageContainer.vue";
 import AddSubscriptionModal from "./components/AddSubscriptionModal/AddSubscriptionModal.vue";
+import SubscriptionHeader from "./components/SubscriptionHeader/SubscriptionHeader.vue";
+import SubscriptionMonthList from "./components/SubscriptionMonthList/SubscriptionMonthList.vue";
+import SubscriptionSummary from "./components/SubscriptionSummary/SubscriptionSummary.vue";
+import SubscriptionToolbar from "./components/SubscriptionToolbar/SubscriptionToolbar.vue";
 import {
   calendarMonths,
   getNextPaymentDate,
   parseSubscriptionDate,
   parseTransactionDate
 } from "@/utils/subscriptionBilling";
-import SubscriptionHeader from "./components/SubscriptionHeader/SubscriptionHeader.vue";
-import SubscriptionMonthList from "./components/SubscriptionMonthList/SubscriptionMonthList.vue";
-import SubscriptionSummary from "./components/SubscriptionSummary/SubscriptionSummary.vue";
-import SubscriptionToolbar from "./components/SubscriptionToolbar/SubscriptionToolbar.vue";
-
-type SubscriptionMonthGroup = {
-  name: string;
-  order: number;
-  subscriptions: Subscription[];
-};
-
-type SubscriptionFilters = {
-  category: string;
-  min: number | null;
-  max: number | null;
-};
-
-type StatusFilter = "active" | "inactive" | "all";
+import {
+  StatusFilter,
+  SubscriptionFilters,
+  SubscriptionMonthGroup
+} from "@/pages/SubscriptionPage/subscriptionTypes";
 
 export default defineComponent({
   name: "SubscriptionPage",

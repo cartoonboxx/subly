@@ -6,41 +6,32 @@
         <span>Статистика</span>
       </button>
 
-      <div :class="style.header">
-        <div>
-          <span :class="style.eyebrow">Месяц</span>
-          <h1>{{ monthTitle }}</h1>
-        </div>
-      </div>
+      <UiPageHeader compact eyebrow="Месяц" :title="monthTitle" />
 
-      <article :class="style.summaryCard">
+      <UiSummaryCard :class="style.summaryCard" tone="teal">
         <div :class="style.summaryTop">
           <span>Списания за месяц</span>
-          <span :class="style.summaryBadge"
-            >{{ paymentItems.length }} подписок</span
-          >
+          <UiBadge tone="glass"> {{ paymentItems.length }} подписок </UiBadge>
         </div>
 
         <div :class="style.totalRow">
           <strong>{{ formatCurrency(monthTotal) }}</strong>
           <span>{{ totalChargesLabel }}</span>
         </div>
-      </article>
+      </UiSummaryCard>
     </section>
 
-    <section v-if="paymentItems.length === 0" :class="style.emptyState">
-      <span :class="style.emptyIcon">
-        <ion-icon :icon="pieChartOutline" />
-      </span>
-      <h2>В этом месяце списаний нет</h2>
-      <p>
-        Когда у подписок появятся списания в выбранном месяце, здесь будет
-        диаграмма и список платежей.
-      </p>
-    </section>
+    <UiEmptyState
+      v-if="paymentItems.length === 0"
+      :icon="pieChartOutline"
+      title="В этом месяце списаний нет"
+    >
+      Когда у подписок появятся списания в выбранном месяце, здесь будет
+      диаграмма и список платежей.
+    </UiEmptyState>
 
     <template v-else>
-      <section :class="style.chartSection">
+      <UiCard tag="section" :class="style.chartSection">
         <div
           :class="style.pieWrap"
           @pointerdown="startChartSwipe"
@@ -69,7 +60,7 @@
             <strong>{{ formatCurrency(item.total) }}</strong>
           </article>
         </div>
-      </section>
+      </UiCard>
     </template>
   </PageContainer>
 </template>
@@ -79,6 +70,13 @@ import {defineComponent} from "vue";
 import {IonIcon} from "@ionic/vue";
 import {chevronBackOutline, pieChartOutline} from "ionicons/icons";
 import PageContainer from "@/layout/PageContainer/PageContainer.vue";
+import {
+  UiBadge,
+  UiCard,
+  UiEmptyState,
+  UiPageHeader,
+  UiSummaryCard
+} from "@/components/ui";
 import {
   calendarMonths,
   getOccurrencesInRange,
@@ -112,7 +110,12 @@ export default defineComponent({
   name: "StatisticsMonthPage",
   components: {
     IonIcon,
-    PageContainer
+    PageContainer,
+    UiBadge,
+    UiCard,
+    UiEmptyState,
+    UiPageHeader,
+    UiSummaryCard
   },
   data() {
     return {

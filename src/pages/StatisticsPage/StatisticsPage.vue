@@ -1,19 +1,14 @@
 <template>
   <PageContainer>
     <section :class="style.hero">
-      <div :class="style.header">
-        <div>
-          <span :class="style.eyebrow">Аналитика</span>
-          <h1>Статистика</h1>
-        </div>
-      </div>
+      <UiPageHeader eyebrow="Аналитика" title="Статистика" />
 
-      <article :class="style.summaryCard">
+      <UiSummaryCard :class="style.summaryCard" tone="teal">
         <div :class="style.summaryTop">
           <span>Прогноз расходов</span>
-          <span :class="style.summaryBadge"
-            >{{ activeSubscriptions.length }} активных</span
-          >
+          <UiBadge tone="glass">
+            {{ activeSubscriptions.length }} активных
+          </UiBadge>
         </div>
 
         <div :class="style.totalRow">
@@ -32,7 +27,7 @@
             <strong>{{ formatCurrency(yearlyForecast) }}</strong>
           </div>
         </div>
-      </article>
+      </UiSummaryCard>
     </section>
 
     <section :class="style.statsGrid" aria-label="Ключевые показатели">
@@ -55,28 +50,21 @@
       />
     </section>
 
-    <section v-if="subscriptions.length === 0" :class="style.emptyState">
-      <span :class="style.emptyIcon">
-        <ion-icon :icon="analyticsOutline" />
-      </span>
-      <h2>Нет данных для статистики</h2>
-      <p>
+    <UiEmptyState
+      v-if="subscriptions.length === 0"
+      :icon="analyticsOutline"
+      title="Нет данных для статистики"
+    >
         Добавьте подписку, чтобы увидеть прогноз расходов, категории и историю
         списаний.
-      </p>
-    </section>
+    </UiEmptyState>
 
     <template v-else>
       <section :class="style.section">
-        <div :class="style.sectionHeader">
-          <div>
-            <span :class="style.eyebrow">Структура</span>
-            <h2>Расходы по категориям</h2>
-          </div>
-        </div>
+        <UiSectionHeader eyebrow="Структура" title="Расходы по категориям" />
 
         <div v-if="categoryStats.length > 0" :class="style.categoryList">
-          <article
+          <UiCard
             v-for="category in categoryStats"
             :key="category.name"
             :class="style.barItem"
@@ -92,21 +80,17 @@
               />
             </div>
             <small>{{ category.percent }}% от месячного прогноза</small>
-          </article>
+          </UiCard>
         </div>
 
-        <div v-else :class="style.compactEmpty">Активных подписок пока нет</div>
+        <UiEmptyState v-else compact>Активных подписок пока нет</UiEmptyState>
       </section>
 
       <section :class="style.section">
-        <div :class="style.sectionHeader">
-          <div>
-            <span :class="style.eyebrow">Динамика</span>
-            <h2>История списаний</h2>
-          </div>
-        </div>
+        <UiSectionHeader eyebrow="Динамика" title="История списаний" />
 
-        <div
+        <UiCard
+          tag="div"
           :class="style.monthChart"
           aria-label="Списания за последние 12 месяцев"
         >
@@ -127,28 +111,23 @@
             <strong>{{ formatCompactCurrency(month.total) }}</strong>
             <span>{{ month.label }}</span>
           </button>
-        </div>
+        </UiCard>
       </section>
 
       <section :class="style.section">
-        <div :class="style.sectionHeader">
-          <div>
-            <span :class="style.eyebrow">Приоритет</span>
-            <h2>Топ расходов</h2>
-          </div>
-        </div>
+        <UiSectionHeader eyebrow="Приоритет" title="Топ расходов" />
 
         <div v-if="topSubscriptions.length > 0" :class="style.rankedList">
-          <article
+          <UiCard
             v-for="item in topSubscriptions"
             :key="item.subscription.id"
             :class="style.rankedItem"
           >
-            <div
-              :class="[style.serviceIcon, style[item.subscription.colorClass]]"
-            >
-              <ion-icon :icon="item.subscription.icon" />
-            </div>
+            <UiServiceIcon
+              :color-class="item.subscription.colorClass"
+              :icon="item.subscription.icon"
+              size="md"
+            />
 
             <div :class="style.rankedInfo">
               <strong>{{ item.subscription.name }}</strong>
@@ -164,29 +143,26 @@
               <strong>{{ formatCurrency(item.monthlyTotal) }}</strong>
               <span>в месяц</span>
             </div>
-          </article>
+          </UiCard>
         </div>
 
-        <div v-else :class="style.compactEmpty">Активных подписок пока нет</div>
+        <UiEmptyState v-else compact>Активных подписок пока нет</UiEmptyState>
       </section>
 
       <section :class="style.section">
-        <div :class="style.sectionHeader">
-          <div>
-            <span :class="style.eyebrow">Календарь</span>
-            <h2>Ближайшие списания</h2>
-          </div>
-        </div>
+        <UiSectionHeader eyebrow="Календарь" title="Ближайшие списания" />
 
         <div v-if="upcomingPayments.length > 0" :class="style.paymentList">
-          <article
+          <UiCard
             v-for="payment in upcomingPayments"
             :key="payment.id"
             :class="style.paymentItem"
           >
-            <div :class="[style.serviceIcon, style[payment.colorClass]]">
-              <ion-icon :icon="payment.icon" />
-            </div>
+            <UiServiceIcon
+              :color-class="payment.colorClass"
+              :icon="payment.icon"
+              size="md"
+            />
 
             <div :class="style.paymentInfo">
               <strong>{{ payment.name }}</strong>
@@ -196,10 +172,10 @@
             <strong :class="style.paymentAmount">
               {{ formatCurrency(payment.amount) }}
             </strong>
-          </article>
+          </UiCard>
         </div>
 
-        <div v-else :class="style.compactEmpty">Активных списаний пока нет</div>
+        <UiEmptyState v-else compact>Активных списаний пока нет</UiEmptyState>
       </section>
     </template>
   </PageContainer>
@@ -207,15 +183,23 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import {IonIcon} from "@ionic/vue";
+import PageContainer from "@/layout/PageContainer/PageContainer.vue";
+import StatisticsCard from "@/components/StatisticsCard/StatisticsCard.vue";
+import {
+  UiBadge,
+  UiCard,
+  UiEmptyState,
+  UiPageHeader,
+  UiSectionHeader,
+  UiServiceIcon,
+  UiSummaryCard
+} from "@/components/ui";
 import {
   analyticsOutline,
   calendarClearOutline,
   trendingUpOutline,
   walletOutline
 } from "ionicons/icons";
-import PageContainer from "@/layout/PageContainer/PageContainer.vue";
-import StatisticsCard from "@/components/StatisticsCard/StatisticsCard.vue";
 import {
   calendarMonths,
   formatShortDate,
@@ -227,45 +211,27 @@ import {
   parseTransactionDate,
   toDateOnly
 } from "@/utils/subscriptionBilling";
+import {
+  CategoryStat,
+  HistoryMonth,
+  RankedSubscription,
+  UpcomingPayment
+} from "@/pages/StatisticsPage/typesStatistics";
+
 import style from "./StatisticsPage.module.scss";
-
-type CategoryStat = {
-  name: string;
-  percent: number;
-  total: number;
-};
-
-type HistoryMonth = {
-  key: string;
-  label: string;
-  monthIndex: number;
-  percent: number;
-  total: number;
-  year: number;
-};
-
-type RankedSubscription = {
-  monthlyTotal: number;
-  percent: number;
-  subscription: Subscription;
-};
-
-type UpcomingPayment = {
-  amount: number;
-  colorClass: string;
-  dateLabel: string;
-  daysLabel: string;
-  icon: string;
-  id: number;
-  name: string;
-};
 
 export default defineComponent({
   name: "StatisticsPage",
   components: {
-    IonIcon,
     PageContainer,
-    StatisticsCard
+    StatisticsCard,
+    UiBadge,
+    UiCard,
+    UiEmptyState,
+    UiPageHeader,
+    UiSectionHeader,
+    UiServiceIcon,
+    UiSummaryCard
   },
   data() {
     return {
