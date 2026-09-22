@@ -2,31 +2,31 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--space-8);
 
   h2 {
-    margin-top: 4px;
-    color: #111827;
-    font-size: 22px;
-    line-height: 1.15;
-    font-weight: 800;
+    margin-top: var(--space-2);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-heading);
+    line-height: var(--line-height-tight);
+    font-weight: var(--font-weight-bold);
   }
 
   :global(.ui-section-meta) {
     flex: 0 0 auto;
-    color: #64748b;
-    font-size: 13px;
-    line-height: 1.2;
-    font-weight: 700;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-body);
+    line-height: var(--line-height-tight);
+    font-weight: var(--font-weight-semibold);
   }
 }
 
 .eyebrow {
   display: block;
-  color: #64748b;
-  font-size: 12px;
-  line-height: 1.2;
-  font-weight: 700;
-  letter-spacing: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-default);
   text-transform: uppercase;
 }

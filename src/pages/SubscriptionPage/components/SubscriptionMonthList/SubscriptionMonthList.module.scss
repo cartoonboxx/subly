@@ -1,48 +1,48 @@
 .section {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: var(--layout-section-gap);
 }
 
 .subscriptionList {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: var(--layout-stack-gap-lg);
 }
 
 .monthGroup {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--layout-stack-gap-sm);
 }
 
 .monthHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 0 2px;
+  gap: var(--layout-stack-gap-md);
+  padding: var(--space-0) var(--space-1);
 
   h3 {
-    margin: 0;
-    color: #111827;
-    font-size: 16px;
-    line-height: 1.2;
-    font-weight: 800;
+    margin: var(--space-0);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-title);
+    line-height: var(--line-height-tight);
+    font-weight: var(--font-weight-bold);
   }
 
   span {
     display: inline-flex;
-    min-width: 28px;
-    height: 24px;
+    min-width: var(--space-14);
+    height: var(--space-12);
     align-items: center;
     justify-content: center;
-    padding: 0 8px;
-    border-radius: 999px;
-    color: #15803d;
-    background: #dcfce7;
-    font-size: 12px;
-    line-height: 1;
-    font-weight: 800;
+    padding: var(--space-0) var(--space-4);
+    border-radius: var(--radius-pill);
+    color: var(--color-brand-700);
+    background: var(--color-brand-100);
+    font-size: var(--font-size-caption);
+    line-height: var(--line-height-none);
+    font-weight: var(--font-weight-bold);
   }
 }

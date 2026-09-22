@@ -2,22 +2,22 @@
   display: flex;
   min-width: 0;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-4);
 
   > span:not(:first-child) {
     overflow: hidden;
-    color: #64748b;
-    font-size: 13px;
-    line-height: 1.2;
-    font-weight: 600;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-body);
+    line-height: var(--line-height-tight);
+    font-weight: var(--font-weight-medium);
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
   strong {
-    color: #111827;
-    font-size: 20px;
-    line-height: 1.1;
-    font-weight: 800;
+    color: var(--color-text-primary);
+    font-size: var(--space-10);
+    line-height: var(--line-height-tight);
+    font-weight: var(--font-weight-bold);
   }
 }

@@ -1,35 +1,35 @@
 .toolbar {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: var(--layout-stack-gap-sm);
+  margin-bottom: var(--layout-stack-gap-md);
 }
 
 .searchRow {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 44px;
-  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) var(--control-md);
+  gap: var(--layout-stack-gap-sm);
 }
 
 .searchBox {
   display: flex;
   min-width: 0;
   align-items: center;
-  gap: 10px;
-  height: 44px;
-  padding: 0 14px !important;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  color: #64748b;
-  background: #ffffff;
-  font-size: 14px;
-  font-weight: 700;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+  gap: var(--layout-stack-gap-sm);
+  height: var(--control-md);
+  padding: var(--space-0) var(--space-7) !important;
+  border: var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  box-shadow: var(--shadow-surface-sm);
 
   ion-icon {
     flex: 0 0 auto;
-    color: #15803d;
-    font-size: 19px;
+    color: var(--color-brand-700);
+    font-size: var(--space-10);
   }
 
   span {
@@ -42,8 +42,8 @@
 .statusTabs {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
-  padding: 4px;
+  gap: var(--space-3);
+  padding: var(--space-2);
 }
 
 .statusTab {
@@ -52,16 +52,16 @@
   min-height: 38px;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 0 8px;
+  gap: var(--space-3);
+  padding: var(--space-0) var(--space-4);
   border: 0;
-  border-radius: 7px;
-  color: #64748b;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
   background: transparent;
   font: inherit;
-  font-size: 12px;
-  line-height: 1;
-  font-weight: 800;
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-none);
+  font-weight: var(--font-weight-bold);
 
   span {
     overflow: hidden;
@@ -71,25 +71,25 @@
 
   strong {
     display: inline-flex;
-    min-width: 20px;
-    height: 20px;
+    min-width: var(--badge-size);
+    height: var(--badge-size);
     align-items: center;
     justify-content: center;
-    border-radius: 999px;
-    color: #475569;
-    background: #f1f5f9;
-    font-size: 11px;
-    line-height: 1;
-    font-weight: 900;
+    border-radius: var(--radius-pill);
+    color: var(--color-slate-600);
+    background: var(--color-slate-100);
+    font-size: var(--font-size-caption);
+    line-height: var(--line-height-none);
+    font-weight: var(--font-weight-black);
   }
 }
 
 .activeStatusTab {
-  color: #166534;
-  background: #dcfce7;
+  color: var(--color-success);
+  background: var(--color-success-surface);
 
   strong {
-    color: #ffffff;
-    background: #16a34a;
+    color: var(--color-white);
+    background: var(--color-brand-600);
   }
 }

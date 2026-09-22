@@ -1,8 +1,8 @@
 .subscriptionItem {
   display: grid;
-  grid-template-columns: 46px minmax(0, 1fr) auto;
+  grid-template-columns: var(--icon-lg) minmax(0, 1fr) auto;
   align-items: center;
-  gap: 12px;
+  gap: var(--layout-stack-gap-md);
 }
 
 .serviceInfo,
@@ -10,24 +10,24 @@
   display: flex;
   min-width: 0;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-2);
 
   strong {
     overflow: hidden;
-    color: #111827;
-    font-size: 15px;
-    line-height: 1.2;
-    font-weight: 800;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-body-lg);
+    line-height: var(--line-height-tight);
+    font-weight: var(--font-weight-bold);
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
   span {
     overflow: hidden;
-    color: #64748b;
-    font-size: 12px;
-    line-height: 1.2;
-    font-weight: 600;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-caption);
+    line-height: var(--line-height-tight);
+    font-weight: var(--font-weight-medium);
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -37,7 +37,7 @@
   display: flex;
   min-width: 0;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-4);
 
   strong {
     min-width: 0;

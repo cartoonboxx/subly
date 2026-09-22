@@ -4,23 +4,23 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 28px 18px;
+  gap: var(--space-5);
+  padding: var(--space-14) var(--space-9);
   text-align: center;
 
   h2 {
-    color: #111827;
-    font-size: 22px;
-    line-height: 1.15;
-    font-weight: 900;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-heading);
+    line-height: var(--line-height-tight);
+    font-weight: var(--font-weight-black);
   }
 
   p {
     max-width: 330px;
-    color: #64748b;
-    font-size: 14px;
-    line-height: 1.45;
-    font-weight: 600;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-body);
+    line-height: var(--line-height-normal);
+    font-weight: var(--font-weight-medium);
   }
 }
 
@@ -29,16 +29,16 @@
   height: 52px;
 
   ion-icon {
-    font-size: 26px;
+    font-size: var(--space-14);
   }
 }
 
 .compact {
   min-height: 0;
-  padding: 16px;
+  padding: var(--space-8);
 
   p {
     max-width: none;
-    font-weight: 700;
+    font-weight: var(--font-weight-semibold);
   }
 }

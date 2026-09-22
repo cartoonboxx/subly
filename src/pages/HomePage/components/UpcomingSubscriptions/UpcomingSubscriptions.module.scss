@@ -1,17 +1,17 @@
 .section {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: var(--layout-section-gap);
 }
 
 .buttonAll {
-  min-height: 34px;
-  padding: 0 10px;
-  font-size: 13px;
+  min-height: var(--control-sm);
+  padding: var(--space-0) var(--space-5);
+  font-size: var(--font-size-body);
 }
 
 .subscriptionList {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--layout-stack-gap-sm);
 }

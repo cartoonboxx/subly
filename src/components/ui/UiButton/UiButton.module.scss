@@ -1,16 +1,16 @@
 .button {
-  min-height: 44px;
-  padding: 0 14px;
+  min-height: var(--control-md);
+  padding: var(--space-0) var(--space-7);
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font: inherit;
-  font-size: 14px;
-  font-weight: 800;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-bold);
 
   &:disabled {
-    color: #94a3b8;
-    background: #e2e8f0;
-    box-shadow: none;
+    color: var(--color-text-muted);
+    background: var(--color-slate-200);
+    box-shadow: var(--shadow-none);
   }
 }
 
@@ -19,27 +19,27 @@
 }
 
 .primary {
-  color: #ffffff;
-  background: linear-gradient(135deg, #16a34a, #15803d);
-  box-shadow: 0 13px 28px rgba(21, 128, 61, 0.24);
+  color: var(--color-white);
+  background: var(--gradient-primary-action);
+  box-shadow: var(--shadow-action);
 }
 
 .secondary {
-  color: #ffffff;
-  background: #15803d;
+  color: var(--color-white);
+  background: var(--color-brand-700);
 }
 
 .soft {
-  color: #15803d;
-  background: #dcfce7;
+  color: var(--color-brand-700);
+  background: var(--color-brand-100);
 }
 
 .neutral {
-  color: #475569;
-  background: #f1f5f9;
+  color: var(--color-slate-600);
+  background: var(--color-slate-100);
 }
 
 .dangerSoft {
-  color: #be123c;
-  background: #ffe4e6;
+  color: var(--color-danger);
+  background: var(--color-danger-surface);
 }

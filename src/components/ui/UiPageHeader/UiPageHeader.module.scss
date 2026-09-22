@@ -2,28 +2,28 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 4px 2px 0;
+  gap: var(--space-8);
+  padding: var(--space-2) var(--space-1) var(--space-0);
 
   h1 {
-    margin-top: 2px;
-    color: #111827;
-    font-size: 34px;
-    line-height: 1.05;
-    font-weight: 700;
+    margin-top: var(--space-1);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-page-title);
+    line-height: var(--line-height-none);
+    font-weight: var(--font-weight-semibold);
   }
 }
 
 .compact {
-  padding-top: 0;
+  padding-top: var(--space-0);
 }
 
 .eyebrow {
   display: block;
-  color: #64748b;
-  font-size: 12px;
-  line-height: 1.2;
-  font-weight: 700;
-  letter-spacing: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-default);
   text-transform: uppercase;
 }

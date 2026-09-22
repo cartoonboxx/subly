@@ -1,42 +1,39 @@
 .card {
   min-width: 0;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  background: #ffffff;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  border: var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-surface);
 }
 
 .paddingNone {
-  padding: 0;
+  padding: var(--space-0);
 }
 
 .paddingSm {
-  padding: 12px;
+  padding: var(--space-6);
 }
 
 .paddingMd {
-  padding: 14px;
+  padding: var(--space-7);
 }
 
 .dashed {
   border-style: dashed;
-  color: #64748b;
-  background: #f8fafc;
-  box-shadow: none;
+  color: var(--color-text-secondary);
+  background: var(--color-background-muted);
+  box-shadow: var(--shadow-none);
 }
 
 .interactive {
   cursor: pointer;
-  transition:
-    border-color 160ms ease,
-    box-shadow 160ms ease,
-    transform 160ms ease;
+  transition: var(--transition-interactive);
 
   &:hover,
   &:focus-visible {
-    border-color: #86efac;
-    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+    border-color: var(--color-brand-300);
+    box-shadow: var(--shadow-surface-hover);
     outline: 0;
-    transform: translateY(-1px);
+    transform: var(--transform-hover-lift);
   }
 }

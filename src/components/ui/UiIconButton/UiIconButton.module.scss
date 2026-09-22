@@ -1,37 +1,37 @@
 .iconButton {
   position: relative;
-  width: 44px;
-  height: 44px;
-  min-height: 44px;
-  flex: 0 0 44px;
-  margin: 0;
+  width: var(--control-md);
+  height: var(--control-md);
+  min-height: var(--control-md);
+  flex: 0 0 var(--control-md);
+  margin: var(--space-0);
 
-  --background: #f1f5f9;
-  --background-hover: #e2e8f0;
-  --border-radius: 8px;
-  --box-shadow: none;
-  --color: #0f172a;
-  --padding-bottom: 0;
-  --padding-end: 0;
-  --padding-start: 0;
-  --padding-top: 0;
+  --background: var(--color-slate-100);
+  --background-hover: var(--color-slate-200);
+  --border-radius: var(--radius-md);
+  --box-shadow: var(--shadow-none);
+  --color: var(--color-slate-900);
+  --padding-bottom: var(--space-0);
+  --padding-end: var(--space-0);
+  --padding-start: var(--space-0);
+  --padding-top: var(--space-0);
 
   ion-icon {
-    font-size: 21px;
+    font-size: var(--font-size-heading);
   }
 }
 
 .circle {
-  --border-radius: 50%;
+  --border-radius: var(--radius-round);
 }
 
 .badge {
   position: absolute;
-  top: 5px;
-  right: 5px;
-  min-width: 16px;
-  min-height: 16px;
-  height: 16px;
-  padding: 0 4px;
-  font-size: 10px;
+  top: var(--space-3);
+  right: var(--space-3);
+  min-width: var(--space-8);
+  min-height: var(--space-8);
+  height: var(--space-8);
+  padding: var(--space-0) var(--space-2);
+  font-size: var(--font-size-caption);
 }

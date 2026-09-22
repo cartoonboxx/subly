@@ -1,36 +1,36 @@
 .summaryCard {
-  margin-bottom: 16px;
+  margin-bottom: var(--space-8);
 
   .summaryTop {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 14px;
+    gap: var(--space-7);
     color: rgba(255, 255, 255, 0.82);
-    font-size: 14px;
-    font-weight: 700;
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-semibold);
 
     strong {
-      color: #ffffff;
-      font-size: 34px;
-      line-height: 1;
-      font-weight: 800;
+      color: var(--color-white);
+      font-size: var(--font-size-page-title);
+      line-height: var(--line-height-none);
+      font-weight: var(--font-weight-bold);
     }
   }
 
   .summaryGrid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    gap: var(--layout-grid-gap);
 
     div {
       display: flex;
       min-width: 0;
       flex-direction: column;
-      gap: 6px;
-      padding: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      border-radius: 8px;
+      gap: var(--space-3);
+      padding: var(--space-6);
+      border: var(--border-width) solid rgba(255, 255, 255, 0.16);
+      border-radius: var(--radius-md);
       background: rgba(255, 255, 255, 0.1);
     }
 
@@ -43,16 +43,16 @@
 
     span {
       color: rgba(255, 255, 255, 0.7);
-      font-size: 12px;
-      line-height: 1.2;
-      font-weight: 700;
+      font-size: var(--font-size-caption);
+      line-height: var(--line-height-tight);
+      font-weight: var(--font-weight-semibold);
     }
 
     strong {
-      color: #ffffff;
-      font-size: 20px;
-      line-height: 1.1;
-      font-weight: 800;
+      color: var(--color-white);
+      font-size: var(--space-10);
+      line-height: var(--line-height-tight);
+      font-weight: var(--font-weight-bold);
     }
   }
 }

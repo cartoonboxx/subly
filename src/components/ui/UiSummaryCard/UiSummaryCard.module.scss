@@ -2,30 +2,24 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  padding: 18px;
-  border-radius: 8px;
-  color: #ffffff;
-  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.18);
+  gap: var(--space-9);
+  padding: var(--space-9);
+  border-radius: var(--radius-md);
+  color: var(--color-white);
+  box-shadow: var(--shadow-summary);
 }
 
 .green {
-  background:
-    radial-gradient(circle at top right, rgba(255, 255, 255, 0.28), transparent 34%),
-    linear-gradient(135deg, #15803d 0%, #16a34a 52%, #0f766e 100%);
-  box-shadow: 0 16px 34px rgba(22, 163, 74, 0.26);
+  background: var(--gradient-summary-green);
+  box-shadow: var(--shadow-summary-green);
 }
 
 .dark {
-  background:
-    radial-gradient(circle at top right, rgba(255, 255, 255, 0.24), transparent 36%),
-    linear-gradient(135deg, #0f172a 0%, #14532d 100%);
+  background: var(--gradient-summary-dark);
 }
 
 .teal {
-  background:
-    radial-gradient(circle at top right, rgba(255, 255, 255, 0.24), transparent 36%),
-    linear-gradient(135deg, #0f172a 0%, #14532d 54%, #0e7490 100%);
+  background: var(--gradient-summary-teal);
 }
 
 .interactive {
