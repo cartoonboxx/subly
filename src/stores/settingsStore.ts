@@ -1,4 +1,5 @@
 import {defineStore} from "pinia";
+import {syncStatusBar} from "@/utils/statusBar";
 
 export type AppCurrency = "RUB" | "USD" | "EUR";
 export type AppTheme = "system" | "light" | "dark";
@@ -105,6 +106,7 @@ export const settingsStore = defineStore("settings", {
         this.theme === "system" ? (prefersDark ? "dark" : "light") : this.theme;
 
       document.documentElement.dataset.theme = resolvedTheme;
+      void syncStatusBar(resolvedTheme);
     },
     formatCurrency(value: number) {
       const roundedValue = Math.round(value).toLocaleString("ru-RU");

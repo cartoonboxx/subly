@@ -12,13 +12,7 @@
   gap: var(--space-8);
   min-height: 100%;
   padding: var(--space-9) var(--space-8) calc(var(--space-11) + var(--ion-safe-area-bottom));
-  background:
-    linear-gradient(
-      180deg,
-      rgba(220, 252, 231, 0.72),
-      rgba(246, 248, 251, 0) 172px
-    ),
-    var(--color-background);
+  background: var(--gradient-modal-surface), var(--color-background);
 }
 
 .header {
@@ -56,7 +50,7 @@
   border: 0;
   border-radius: var(--radius-round);
   color: var(--color-slate-900);
-  background: rgba(255, 255, 255, 0.82);
+  background: var(--color-surface);
   box-shadow: var(--shadow-surface-hover);
   font: inherit;
   font-size: var(--font-size-body);
@@ -118,7 +112,7 @@
     border-radius: var(--radius-md);
     color: var(--color-text-primary);
     background: var(--color-background-muted);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88);
+    box-shadow: var(--shadow-input-inset);
     font-size: var(--font-size-body-lg);
     font-weight: var(--font-weight-semibold);
     transition: var(--transition-interactive);
@@ -131,7 +125,7 @@
       background: var(--color-surface);
       box-shadow:
         var(--shadow-focus),
-        inset 0 1px 0 rgba(255, 255, 255, 0.88);
+        var(--shadow-input-inset);
     }
   }
 }
@@ -148,7 +142,7 @@
   border-radius: var(--radius-md);
   color: var(--color-text-primary);
   background: var(--color-background-muted);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88);
+  box-shadow: var(--shadow-input-inset);
   font: inherit;
   text-align: left;
   transition:
@@ -162,7 +156,7 @@
     background: var(--color-surface);
     box-shadow:
       var(--shadow-focus),
-      inset 0 1px 0 rgba(255, 255, 255, 0.88);
+      var(--shadow-input-inset);
     outline: 0;
   }
 
@@ -306,9 +300,9 @@
   align-items: center;
   gap: var(--layout-stack-gap-md);
   padding: var(--space-7);
-  border: 1px solid rgba(239, 68, 68, 0.22);
+  border: var(--border-width) solid var(--color-danger-border);
   border-radius: var(--radius-md);
-  background: rgba(254, 242, 242, 0.72);
+  background: var(--color-danger-background);
 
   div {
     display: flex;
@@ -463,6 +457,33 @@
 }
 
 .calendar {
+  --background: var(--color-surface);
+  --background-rgb: var(--color-surface-rgb);
+  --wheel-fade-background-rgb: var(--color-surface-rgb);
+  --wheel-highlight-background: var(--color-background-muted);
+  --wheel-highlight-border-radius: var(--radius-md);
+  --ion-color-base: var(--color-surface);
+  --ion-background-color-rgb: var(--color-surface-rgb);
+  --ion-color-step-50: var(--color-surface);
+  --ion-color-step-100: var(--color-background-muted);
+  --ion-color-step-150: var(--color-background-muted);
+  --ion-color-step-200: var(--color-slate-200);
+  --ion-color-step-250: var(--color-slate-200);
+  --ion-color-step-300: var(--color-slate-300);
+  --ion-color-step-350: var(--color-slate-300);
+  --ion-color-step-400: var(--color-slate-400);
+  --ion-color-step-450: var(--color-slate-400);
+  --ion-color-step-500: var(--color-slate-500);
+  --ion-color-step-550: var(--color-slate-500);
+  --ion-color-step-600: var(--color-slate-600);
+  --ion-color-step-650: var(--color-slate-600);
+  --ion-color-step-700: var(--color-slate-700);
+  --ion-color-step-750: var(--color-slate-700);
+  --ion-color-step-800: var(--color-slate-800);
+  --ion-color-step-850: var(--color-slate-800);
+  --ion-color-step-900: var(--color-slate-900);
+  --ion-color-step-950: var(--color-slate-900);
+  color: var(--color-text-primary);
   overflow: hidden;
   align-self: center;
   width: 100%;
@@ -498,7 +519,7 @@
   border: var(--border-muted);
   border-radius: var(--radius-md);
   color: var(--color-slate-700);
-  background: rgba(255, 255, 255, 0.94);
+  background: var(--color-surface);
   box-shadow: var(--shadow-surface-sm);
   font: inherit;
   transition: var(--transition-interactive);
@@ -634,7 +655,7 @@
   display: flex;
   margin-top: auto;
   padding-top: var(--space-4);
-  background: linear-gradient(180deg, rgba(246, 248, 251, 0), var(--color-background) 42%);
+  background: linear-gradient(180deg, transparent, var(--color-background) 42%);
   z-index: var(--z-sticky-action);
 }
 
@@ -644,7 +665,7 @@
   margin: var(--space-0) calc(var(--space-8) * -1);
   padding: var(--space-6) var(--space-8) calc(var(--space-8) + var(--ion-safe-area-bottom));
   background: var(--color-background-muted);
-  box-shadow: 0 -14px 26px rgba(15, 23, 42, 0.08);
+  box-shadow: var(--shadow-sticky-panel);
 }
 
 .submitButton {

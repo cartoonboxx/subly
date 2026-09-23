@@ -8,12 +8,6 @@ html {
 }
 
 :root {
-    /*
-     * Subly design rules.
-     * Keep product tokens prefixed with --* so they can be adopted
-     * gradually without colliding with Ionic variables.
-     */
-
     /* Core brand palette */
     --color-brand-50: #f0fdf4;
     --color-brand-100: #dcfce7;
@@ -65,8 +59,10 @@ html {
 
     /* Semantic color roles */
     --color-background: #f6f8fb;
+    --color-background-rgb: 246, 248, 251;
     --color-background-muted: var(--color-slate-50);
     --color-surface: var(--color-white);
+    --color-surface-rgb: 255, 255, 255;
     --color-surface-soft: var(--color-slate-50);
     --color-text-primary: var(--color-ink);
     --color-text-secondary: var(--color-slate-500);
@@ -75,6 +71,8 @@ html {
     --color-border-strong: var(--color-slate-300);
     --color-focus: rgba(34, 197, 94, 0.24);
     --color-danger: var(--color-red-700);
+    --color-danger-border: rgba(239, 68, 68, 0.22);
+    --color-danger-background: rgba(254, 242, 242, 0.72);
     --color-danger-surface: var(--color-red-100);
     --color-success: var(--color-brand-800);
     --color-success-surface: var(--color-brand-100);
@@ -89,6 +87,11 @@ html {
     --gradient-primary-action: linear-gradient(135deg, #16a34a, #15803d);
     --gradient-chart-bar: linear-gradient(90deg, #16a34a, #0891b2);
     --gradient-chart-column: linear-gradient(180deg, #0ea5e9, #22c55e);
+    --gradient-modal-surface: linear-gradient(
+        180deg,
+        rgba(220, 252, 231, 0.72),
+        rgba(246, 248, 251, 0) 172px
+    );
 
     /* Spacing scale */
     --space-0: 0;
@@ -112,6 +115,7 @@ html {
     /* Layout */
     --layout-page-max-width: 720px;
     --layout-page-padding: 20px;
+    --layout-page-padding-top: calc(var(--layout-page-padding) + var(--app-safe-area-top));
     --layout-section-gap: 14px;
     --layout-stack-gap-sm: 10px;
     --layout-stack-gap-md: 12px;
@@ -147,6 +151,8 @@ html {
     --shadow-action: 0 13px 28px rgba(21, 128, 61, 0.24);
     --shadow-focus: 0 0 0 3px rgba(34, 197, 94, 0.13);
     --shadow-tabbar: 0 0 8px 1px rgba(0, 0, 0, 0.3);
+    --shadow-input-inset: inset 0 1px 0 rgba(255, 255, 255, 0.88);
+    --shadow-sticky-panel: 0 -14px 26px rgba(15, 23, 42, 0.08);
 
     /* Typography */
     --font-family: var(--ion-font-family, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
@@ -189,7 +195,11 @@ html {
     --transform-hover-lift: translateY(-1px);
 
     /* Layering */
+    --z-system-status-bar: 10001;
     --z-sticky-action: 10000;
+
+    /* Safe areas */
+    --app-safe-area-top: max(env(safe-area-inset-top), var(--ion-safe-area-top, 0px));
 
     /* Ionic theme bridge */
     --ion-color-primary: #22c55e;
@@ -200,37 +210,95 @@ html {
     --ion-color-primary-tint: #38cb6e;
 }
 
+body,
+ion-app {
+    background: var(--color-background);
+}
+
 :root[data-theme="dark"] {
-    --color-background: #0f172a;
+    --color-brand-50: rgba(34, 197, 94, 0.1);
+    --color-brand-100: rgba(34, 197, 94, 0.16);
+    --color-brand-200: rgba(74, 222, 128, 0.26);
+    --color-brand-300: #4ade80;
+    --color-brand-400: #22c55e;
+    --color-brand-500: #22c55e;
+    --color-brand-600: #16a34a;
+    --color-brand-700: #86efac;
+    --color-brand-800: #bbf7d0;
+    --color-brand-900: #dcfce7;
+
+    --color-blue-100: rgba(96, 165, 250, 0.16);
+    --color-blue-700: #93c5fd;
+    --color-cyan-100: rgba(34, 211, 238, 0.15);
+    --color-cyan-700: #67e8f9;
+    --color-violet-100: rgba(167, 139, 250, 0.16);
+    --color-violet-700: #c4b5fd;
+    --color-orange-100: rgba(251, 146, 60, 0.16);
+    --color-orange-700: #fdba74;
+    --color-red-100: rgba(251, 113, 133, 0.16);
+    --color-red-600: #fb7185;
+    --color-red-700: #fda4af;
+    --color-pink-100: rgba(244, 114, 182, 0.16);
+    --color-pink-700: #f9a8d4;
+    --color-amber-100: rgba(251, 191, 36, 0.16);
+    --color-amber-700: #fcd34d;
+    --color-indigo-100: rgba(129, 140, 248, 0.16);
+    --color-indigo-700: #a5b4fc;
+
+    --color-background: #0b1120;
+    --color-background-rgb: 11, 17, 32;
     --color-background-muted: #111827;
-    --color-surface: #182235;
-    --color-surface-soft: #111827;
+    --color-surface: #151f2f;
+    --color-surface-rgb: 21, 31, 47;
+    --color-surface-soft: #101826;
     --color-text-primary: #f8fafc;
-    --color-text-secondary: #cbd5e1;
-    --color-text-muted: #94a3b8;
-    --color-border: rgba(148, 163, 184, 0.22);
-    --color-border-strong: rgba(148, 163, 184, 0.34);
-    --color-focus: rgba(74, 222, 128, 0.24);
-    --color-danger: #fb7185;
-    --color-danger-surface: rgba(225, 29, 72, 0.16);
+    --color-text-secondary: #a9b7ca;
+    --color-text-muted: #748196;
+    --color-border: rgba(148, 163, 184, 0.18);
+    --color-border-strong: rgba(148, 163, 184, 0.3);
+    --color-focus: rgba(74, 222, 128, 0.22);
+    --color-danger: #fda4af;
+    --color-danger-border: rgba(251, 113, 133, 0.28);
+    --color-danger-background: rgba(244, 63, 94, 0.1);
+    --color-danger-surface: rgba(244, 63, 94, 0.14);
     --color-success: #86efac;
-    --color-success-surface: rgba(34, 197, 94, 0.16);
-    --color-slate-50: #111827;
-    --color-slate-100: #1f2937;
-    --color-slate-200: #334155;
-    --color-slate-300: #475569;
-    --color-slate-400: #94a3b8;
-    --color-slate-500: #cbd5e1;
-    --color-slate-600: #e2e8f0;
-    --color-slate-700: #f1f5f9;
-    --color-slate-800: #f8fafc;
-    --color-slate-900: #ffffff;
+    --color-success-surface: rgba(34, 197, 94, 0.14);
+    --color-slate-50: #101826;
+    --color-slate-100: #172235;
+    --color-slate-200: #243249;
+    --color-slate-300: #334155;
+    --color-slate-400: #64748b;
+    --color-slate-500: #94a3b8;
+    --color-slate-600: #cbd5e1;
+    --color-slate-700: #e2e8f0;
+    --color-slate-800: #f1f5f9;
+    --color-slate-900: #f8fafc;
     --color-ink: #f8fafc;
-    --shadow-surface-sm: 0 8px 20px rgba(0, 0, 0, 0.18);
-    --shadow-surface: 0 8px 24px rgba(0, 0, 0, 0.22);
-    --shadow-surface-hover: 0 12px 28px rgba(0, 0, 0, 0.28);
-    --shadow-panel: 0 10px 28px rgba(0, 0, 0, 0.22);
-    --shadow-tabbar: 0 0 12px rgba(0, 0, 0, 0.44);
+    --gradient-summary-green: radial-gradient(circle at top right, rgba(134, 239, 172, 0.26), transparent 38%),
+        linear-gradient(135deg, #14532d 0%, #166534 52%, #0f766e 100%);
+    --gradient-summary-dark: radial-gradient(circle at top right, rgba(134, 239, 172, 0.16), transparent 38%),
+        linear-gradient(135deg, #111827 0%, #0f172a 54%, #14532d 100%);
+    --gradient-summary-teal: radial-gradient(circle at top right, rgba(103, 232, 249, 0.2), transparent 38%),
+        linear-gradient(135deg, #111827 0%, #134e4a 54%, #0e7490 100%);
+    --gradient-primary-action: linear-gradient(135deg, #22c55e, #15803d);
+    --gradient-chart-bar: linear-gradient(90deg, #22c55e, #22d3ee);
+    --gradient-chart-column: linear-gradient(180deg, #38bdf8, #4ade80);
+    --gradient-modal-surface: linear-gradient(
+        180deg,
+        rgba(34, 197, 94, 0.12),
+        rgba(11, 17, 32, 0) 178px
+    );
+    --shadow-surface-sm: 0 8px 20px rgba(0, 0, 0, 0.2);
+    --shadow-surface: 0 10px 28px rgba(0, 0, 0, 0.26);
+    --shadow-surface-hover: 0 14px 34px rgba(0, 0, 0, 0.34);
+    --shadow-panel: 0 10px 28px rgba(0, 0, 0, 0.24);
+    --shadow-summary: 0 18px 36px rgba(0, 0, 0, 0.34);
+    --shadow-summary-green: 0 18px 36px rgba(21, 128, 61, 0.28);
+    --shadow-action: 0 13px 28px rgba(21, 128, 61, 0.28);
+    --shadow-focus: 0 0 0 3px rgba(34, 197, 94, 0.16);
+    --shadow-tabbar: 0 -8px 24px rgba(0, 0, 0, 0.32);
+    --shadow-input-inset: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    --shadow-sticky-panel: 0 -14px 30px rgba(0, 0, 0, 0.32);
     --ion-background-color: var(--color-background);
     --ion-text-color: var(--color-text-primary);
 }
@@ -246,34 +314,4 @@ span,
 label {
     margin: 0;
     padding: 0
-}
-
-h1 {
-    font-size: 38px;
-    font-weight: 500;
-}
-
-h2 {
-    font-size: 34px;
-    font-weight: 500;
-}
-
-h3 {
-    font-size: 28px;
-    font-weight: 500;
-}
-
-h4 {
-    font-size: 22px;
-    font-weight: 500;
-}
-
-h5 {
-    font-size: 16px;
-    font-weight: 500;
-}
-
-h6 {
-    font-size: 14px;
-    font-weight: 500;
 }

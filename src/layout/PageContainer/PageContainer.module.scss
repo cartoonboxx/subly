@@ -1,5 +1,6 @@
 .pageContainer {
   max-width: var(--layout-page-max-width);
   margin: var(--space-0) auto;
-  padding: var(--layout-page-padding);
+  padding: var(--layout-page-padding-top) var(--layout-page-padding)
+    var(--layout-page-padding);
 }

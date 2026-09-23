@@ -1,5 +1,6 @@
 <template>
   <ion-app>
+    <div class="systemStatusBar" aria-hidden="true" />
     <ion-router-outlet />
   </ion-app>
 </template>
@@ -30,3 +31,16 @@ export default defineComponent({
   }
 });
 </script>
+
+<style lang="scss">
+.systemStatusBar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: var(--z-system-status-bar);
+  height: var(--app-safe-area-top);
+  background: var(--color-background);
+  pointer-events: none;
+}
+</style>
