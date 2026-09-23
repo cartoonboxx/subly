@@ -115,7 +115,7 @@
 
           <input
             ref="importInput"
-            accept="application/json"
+            accept=".json,application/json,text/json"
             :class="style.hiddenInput"
             type="file"
             @change="importData"
@@ -149,6 +149,8 @@ import {
   type InputCustomEvent,
   type SelectCustomEvent
 } from "@ionic/vue";
+import {Capacitor} from "@capacitor/core";
+import {Directory, Encoding, Filesystem} from "@capacitor/filesystem";
 import {defineComponent} from "vue";
 import PageContainer from "@/layout/PageContainer/PageContainer.vue";
 import {UiAccordion, UiButton, UiPageHeader} from "@/components/ui";
@@ -269,14 +271,33 @@ export default defineComponent({
         exportedAt: new Date().toISOString(),
         version: 1
       };
-      const file = new Blob([JSON.stringify(backup, null, 2)], {
+      const fileName = `subly-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      const fileContents = JSON.stringify(backup, null, 2);
+
+      if (Capacitor.isNativePlatform()) {
+        try {
+          await Filesystem.writeFile({
+            data: fileContents,
+            directory: Directory.Documents,
+            encoding: Encoding.UTF8,
+            path: fileName
+          });
+          this.showStatus(`Файл сохранен в Документы: ${fileName}`);
+        } catch {
+          this.showStatus("Не удалось сохранить файл на телефоне");
+        }
+
+        return;
+      }
+
+      const file = new Blob([fileContents], {
         type: "application/json"
       });
       const url = URL.createObjectURL(file);
       const link = document.createElement("a");
 
       link.href = url;
-      link.download = `subly-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      link.download = fileName;
       link.click();
       URL.revokeObjectURL(url);
       this.showStatus("Экспорт подготовлен");
@@ -284,7 +305,12 @@ export default defineComponent({
     openImportFile() {
       const input = this.$refs.importInput as HTMLInputElement | undefined;
 
-      input?.click();
+      if (!input) {
+        return;
+      }
+
+      input.value = "";
+      input.click();
     },
     async importData(event: Event) {
       const input = event.target as HTMLInputElement;

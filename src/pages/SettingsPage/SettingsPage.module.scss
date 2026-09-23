@@ -135,7 +135,15 @@
 }
 
 .hiddenInput {
-  display: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
 }
 
 .dangerZone {
@@ -186,12 +194,11 @@
   margin: var(--space-0) auto;
   padding: var(--space-5) var(--space-8);
   border-radius: var(--radius-pill);
-  color: var(--color-white);
+  color: var(--color-slate-50);
   background: var(--color-slate-900);
   box-shadow: var(--shadow-surface-hover);
   font-size: var(--font-size-body);
   line-height: var(--line-height-tight);
-  font-weight: var(--font-weight-bold);
 }
 
 @media (max-width: 560px) {
