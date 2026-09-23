@@ -13,6 +13,8 @@
 
   --background: var(--color-surface);
   --border: 0;
+  --color: var(--color-navigation-text);
+  --color-selected: var(--color-navigation-text-active);
   border-top: 0;
   box-shadow: var(--shadow-tabbar);
   border-top-left-radius: var(--radius-modal);
