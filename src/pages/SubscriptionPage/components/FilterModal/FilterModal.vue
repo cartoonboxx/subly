@@ -130,36 +130,6 @@ export default defineComponent({
     return {
       isFilterModalOpen: false,
       optionsOutline,
-      priceFilters: [
-        {
-          id: "all",
-          label: "Любая",
-          description: "Без ограничения цены",
-          min: null,
-          max: null
-        },
-        {
-          id: "cheap",
-          label: "До 300 ₽",
-          description: "Недорогие подписки",
-          min: null,
-          max: 300
-        },
-        {
-          id: "middle",
-          label: "300-700 ₽",
-          description: "Средний диапазон",
-          min: 300,
-          max: 700
-        },
-        {
-          id: "expensive",
-          label: "От 700 ₽",
-          description: "Самые дорогие",
-          min: 700,
-          max: null
-        }
-      ] as PriceFilter[],
       selectedCategory: "Все",
       selectedPriceFilter: "all" as PriceFilterId,
       style
@@ -196,6 +166,38 @@ export default defineComponent({
     }
   },
   computed: {
+    priceFilters(): PriceFilter[] {
+      return [
+        {
+          id: "all",
+          label: "Любая",
+          description: "Без ограничения цены",
+          min: null,
+          max: null
+        },
+        {
+          id: "cheap",
+          label: `До ${this.$settingsStore.formatCurrency(300)}`,
+          description: "Недорогие подписки",
+          min: null,
+          max: 300
+        },
+        {
+          id: "middle",
+          label: `${this.$settingsStore.formatCurrency(300)}-${this.$settingsStore.formatCurrency(700)}`,
+          description: "Средний диапазон",
+          min: 300,
+          max: 700
+        },
+        {
+          id: "expensive",
+          label: `От ${this.$settingsStore.formatCurrency(700)}`,
+          description: "Самые дорогие",
+          min: 700,
+          max: null
+        }
+      ];
+    },
     selectedPriceFilterConfig() {
       return (
         this.priceFilters.find((priceFilter) => {

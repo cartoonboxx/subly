@@ -246,7 +246,9 @@ export default defineComponent({
           return firstItem.date.getTime() - secondItem.date.getTime();
         })[0];
 
-      return nextPayment ? `${nextPayment.subscription.price} ₽` : "—";
+      return nextPayment
+        ? this.$settingsStore.formatCurrency(nextPayment.subscription.price)
+        : "—";
     },
     subscriptionListTitle() {
       const statusTitle = {

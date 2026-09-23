@@ -186,7 +186,9 @@ export default defineComponent({
       }, 0);
     },
     mostExpensiveLabel() {
-      return this.mostExpensiveSub ? `${this.mostExpensiveSub} ₽` : "—";
+      return this.mostExpensiveSub
+        ? this.$settingsStore.formatCurrency(this.mostExpensiveSub)
+        : "—";
     },
     nextPaymentLabel() {
       const nextSubscription = this.subscriptions[0];

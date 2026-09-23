@@ -27,7 +27,7 @@
     </div>
 
     <div :class="style.priceInfo">
-      <strong>{{ subscription.price }} ₽</strong>
+      <strong>{{ priceLabel }}</strong>
       <span>{{ subscription.period }}</span>
     </div>
   </UiCard>
@@ -66,6 +66,9 @@ export default defineComponent({
   computed: {
     reminderLabel() {
       return `напомнить за ${this.subscription.reminderDays} дн.`;
+    },
+    priceLabel() {
+      return this.$settingsStore.formatCurrency(this.subscription.price);
     },
     statusLabel() {
       return this.subscription.isActive ? "Активна" : "Неактивна";

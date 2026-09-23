@@ -1,3 +1,4 @@
+export {default as UiAccordion} from "./UiAccordion/UiAccordion.vue";
 export {default as UiBadge} from "./UiBadge/UiBadge.vue";
 export {default as UiButton} from "./UiButton/UiButton.vue";
 export {default as UiCard} from "./UiCard/UiCard.vue";

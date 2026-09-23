@@ -8,7 +8,7 @@
     <div :class="style.summaryGrid">
       <div>
         <span>В месяц</span>
-        <strong>{{ monthlyTotal }} ₽</strong>
+        <strong>{{ monthlyTotalLabel }}</strong>
       </div>
 
       <div>
@@ -47,6 +47,11 @@ export default defineComponent({
     return {
       style
     };
+  },
+  computed: {
+    monthlyTotalLabel() {
+      return this.$settingsStore.formatCurrency(this.monthlyTotal);
+    }
   }
 });
 </script>

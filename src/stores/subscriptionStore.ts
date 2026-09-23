@@ -1,5 +1,8 @@
 import {defineStore} from "pinia";
-import {subscriptionRepository} from "@/database/repositories/subscription.repository";
+import {
+  DatabaseSnapshot,
+  subscriptionRepository
+} from "@/database/repositories/subscription.repository";
 import {
   addPeriod,
   formatIsoDate,
@@ -10,7 +13,7 @@ import {
   toDateOnly
 } from "@/utils/subscriptionBilling";
 
-const DEFAULT_CATEGORIES: Category[] = [
+export const DEFAULT_CATEGORIES: Category[] = [
   {
     id: 1,
     name: "Видео"
@@ -340,6 +343,71 @@ export const subscriptionStore = defineStore("subscriptions", {
         return category;
       } catch (error) {
         this.errorMessage = "Не удалось сохранить категорию";
+        throw error;
+      }
+    },
+
+    async updateCategory(id: number, name: string) {
+      try {
+        const category = await subscriptionRepository.updateCategory(id, name);
+
+        if (!category) {
+          this.errorMessage = "Не удалось обновить категорию";
+          return null;
+        }
+
+        const snapshot = await subscriptionRepository.getSnapshot();
+
+        this.categories = snapshot.categories;
+        this.subscriptions = snapshot.subscriptions;
+
+        return category;
+      } catch (error) {
+        this.errorMessage = "Не удалось обновить категорию";
+        throw error;
+      }
+    },
+
+    async deleteCategory(id: number) {
+      try {
+        await subscriptionRepository.deleteCategory(id);
+
+        const snapshot = await subscriptionRepository.getSnapshot();
+
+        this.categories = snapshot.categories;
+        this.subscriptions = snapshot.subscriptions;
+      } catch (error) {
+        this.errorMessage = "Не удалось удалить категорию";
+        throw error;
+      }
+    },
+
+    async exportSnapshot() {
+      return subscriptionRepository.getSnapshot();
+    },
+
+    async importSnapshot(snapshot: DatabaseSnapshot) {
+      try {
+        const importedSnapshot =
+          await subscriptionRepository.replaceSnapshot(snapshot);
+
+        this.categories = importedSnapshot.categories;
+        this.subscriptions = importedSnapshot.subscriptions;
+      } catch (error) {
+        this.errorMessage = "Не удалось импортировать данные";
+        throw error;
+      }
+    },
+
+    async clearData() {
+      try {
+        const snapshot =
+          await subscriptionRepository.clearAllData(DEFAULT_CATEGORIES);
+
+        this.categories = snapshot.categories;
+        this.subscriptions = snapshot.subscriptions;
+      } catch (error) {
+        this.errorMessage = "Не удалось очистить данные";
         throw error;
       }
     },

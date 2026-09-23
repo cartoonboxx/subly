@@ -139,7 +139,7 @@ export default defineComponent({
       return `${count} списаний`;
     },
     formatCurrency(value: number) {
-      return `${Math.round(value).toLocaleString("ru-RU")} ₽`;
+      return this.$settingsStore.formatCurrency(value);
     },
     cancelChartSwipe() {
       this.swipeStartX = null;

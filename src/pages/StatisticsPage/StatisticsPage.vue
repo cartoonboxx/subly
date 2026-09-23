@@ -261,7 +261,7 @@ export default defineComponent({
       return `${Math.round(value)}`;
     },
     formatCurrency(value: number) {
-      return `${Math.round(value).toLocaleString("ru-RU")} ₽`;
+      return this.$settingsStore.formatCurrency(value);
     },
     formatPaymentDate(date: Date) {
       return formatShortDate(date);

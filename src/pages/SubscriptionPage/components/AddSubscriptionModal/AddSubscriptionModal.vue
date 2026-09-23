@@ -408,7 +408,7 @@ export default defineComponent({
       pickerMode: "icon" as PickerMode,
       period: "месяц",
       price: "",
-      reminderDays: "3",
+      reminderDays: "",
       registeredAt: this.getTodayIsoDate(),
       style
     };
@@ -516,7 +516,7 @@ export default defineComponent({
       this.pickerMode = "icon";
       this.period = "месяц";
       this.price = "";
-      this.reminderDays = "3";
+      this.reminderDays = String(this.$settingsStore.defaultReminderDays);
       this.registeredAt = this.getTodayIsoDate();
     },
     fillForm(subscription: Subscription) {

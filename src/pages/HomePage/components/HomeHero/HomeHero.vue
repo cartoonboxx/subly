@@ -18,7 +18,7 @@
       </div>
 
       <div :class="style.totalRow">
-        <strong>{{ total }} ₽</strong>
+        <strong>{{ totalLabel }}</strong>
         <span>{{ subscriptionsCount }} подписок</span>
       </div>
 
@@ -27,8 +27,8 @@
       </div>
 
       <div :class="style.summaryBottom">
-        <span>Уже списано {{ spentTotal }} ₽</span>
-        <span>Осталось {{ remainingTotal }} ₽</span>
+        <span>Уже списано {{ spentTotalLabel }}</span>
+        <span>Осталось {{ remainingTotalLabel }}</span>
       </div>
     </UiSummaryCard>
   </section>
@@ -85,10 +85,19 @@ export default defineComponent({
     };
   },
   computed: {
+    remainingTotalLabel() {
+      return this.$settingsStore.formatCurrency(this.remainingTotal);
+    },
     progressStyle() {
       return {
         width: `${Math.min(Math.max(this.progress, 0), 100)}%`
       };
+    },
+    spentTotalLabel() {
+      return this.$settingsStore.formatCurrency(this.spentTotal);
+    },
+    totalLabel() {
+      return this.$settingsStore.formatCurrency(this.total);
     }
   }
 });

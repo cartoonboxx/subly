@@ -14,7 +14,7 @@ import {
   type TransactionEntityModel
 } from "@/database/entities/transaction.entity";
 
-type DatabaseSnapshot = {
+export type DatabaseSnapshot = {
   categories: Category[];
   subscriptions: Subscription[];
 };
@@ -264,6 +264,52 @@ export const subscriptionRepository = {
     return toCategory(category);
   },
 
+  async updateCategory(id: number, name: string) {
+    const normalizedName = normalizeName(name);
+
+    if (!normalizedName) {
+      return null;
+    }
+
+    const categoryRepository = getCategoryRepository();
+    const existingCategory = await categoryRepository.findOne({
+      where: {
+        id
+      }
+    });
+
+    if (!existingCategory) {
+      return null;
+    }
+
+    const duplicatedCategory = await findCategoryByName(normalizedName);
+
+    if (duplicatedCategory && duplicatedCategory.id !== id) {
+      return null;
+    }
+
+    existingCategory.name = normalizedName;
+
+    const category = await categoryRepository.save(existingCategory);
+
+    return toCategory(category);
+  },
+
+  async deleteCategory(id: number) {
+    await getDatabase().transaction(async (manager) => {
+      await getSubscriptionRepository(manager)
+        .createQueryBuilder()
+        .update(SubscriptionEntity)
+        .set({
+          category: null
+        } as Partial<SubscriptionEntityModel>)
+        .where("category_id = :categoryId", {categoryId: id})
+        .execute();
+
+      await getCategoryRepository(manager).delete(id);
+    });
+  },
+
   async addSubscription(subscription: Subscription) {
     const savedId = await getDatabase().transaction(async (manager) => {
       return saveSubscription(subscription, manager);
@@ -305,6 +351,41 @@ export const subscriptionRepository = {
         await saveSubscription(subscription, manager);
       }
     });
+
+    return this.getSnapshot();
+  },
+
+  async replaceSnapshot(snapshot: DatabaseSnapshot) {
+    await getDatabase().transaction(async (manager) => {
+      await getTransactionRepository(manager).clear();
+      await getSubscriptionRepository(manager).clear();
+      await getCategoryRepository(manager).clear();
+
+      const categoryRepository = getCategoryRepository(manager);
+
+      for (const category of snapshot.categories) {
+        await categoryRepository.save({
+          id: category.id > 0 ? category.id : undefined,
+          name: normalizeName(category.name)
+        } as CategoryEntityModel);
+      }
+
+      for (const subscription of snapshot.subscriptions) {
+        await saveSubscription(subscription, manager);
+      }
+    });
+
+    return this.getSnapshot();
+  },
+
+  async clearAllData(categories: Category[]) {
+    await getDatabase().transaction(async (manager) => {
+      await getTransactionRepository(manager).clear();
+      await getSubscriptionRepository(manager).clear();
+      await getCategoryRepository(manager).clear();
+    });
+
+    await this.seedCategories(categories);
 
     return this.getSnapshot();
   }

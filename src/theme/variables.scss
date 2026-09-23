@@ -200,6 +200,41 @@ html {
     --ion-color-primary-tint: #38cb6e;
 }
 
+:root[data-theme="dark"] {
+    --color-background: #0f172a;
+    --color-background-muted: #111827;
+    --color-surface: #182235;
+    --color-surface-soft: #111827;
+    --color-text-primary: #f8fafc;
+    --color-text-secondary: #cbd5e1;
+    --color-text-muted: #94a3b8;
+    --color-border: rgba(148, 163, 184, 0.22);
+    --color-border-strong: rgba(148, 163, 184, 0.34);
+    --color-focus: rgba(74, 222, 128, 0.24);
+    --color-danger: #fb7185;
+    --color-danger-surface: rgba(225, 29, 72, 0.16);
+    --color-success: #86efac;
+    --color-success-surface: rgba(34, 197, 94, 0.16);
+    --color-slate-50: #111827;
+    --color-slate-100: #1f2937;
+    --color-slate-200: #334155;
+    --color-slate-300: #475569;
+    --color-slate-400: #94a3b8;
+    --color-slate-500: #cbd5e1;
+    --color-slate-600: #e2e8f0;
+    --color-slate-700: #f1f5f9;
+    --color-slate-800: #f8fafc;
+    --color-slate-900: #ffffff;
+    --color-ink: #f8fafc;
+    --shadow-surface-sm: 0 8px 20px rgba(0, 0, 0, 0.18);
+    --shadow-surface: 0 8px 24px rgba(0, 0, 0, 0.22);
+    --shadow-surface-hover: 0 12px 28px rgba(0, 0, 0, 0.28);
+    --shadow-panel: 0 10px 28px rgba(0, 0, 0, 0.22);
+    --shadow-tabbar: 0 0 12px rgba(0, 0, 0, 0.44);
+    --ion-background-color: var(--color-background);
+    --ion-text-color: var(--color-text-primary);
+}
+
 h1,
 h2,
 h3,
