@@ -16,6 +16,9 @@ type IonContentElement = HTMLElement & {
 export default defineComponent({
   name: "AppComponent",
   components: {IonApp, IonRouterOutlet},
+  async mounted() {
+    await this.$subscriptionStore.syncLocalNotifications();
+  },
   watch: {
     "$route.path"() {
       this.$nextTick(() => {

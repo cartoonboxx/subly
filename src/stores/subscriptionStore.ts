@@ -12,6 +12,7 @@ import {
   parseIsoDate,
   toDateOnly
 } from "@/utils/subscriptionBilling";
+import {scheduleSubscriptionExpirationNotifications} from "@/utils/localNotifications";
 
 export const DEFAULT_CATEGORIES: Category[] = [
   {
@@ -205,6 +206,14 @@ export const subscriptionStore = defineStore("subscriptions", {
     getSubscriptions: (state) => state.subscriptions
   },
   actions: {
+    async syncLocalNotifications() {
+      try {
+        await scheduleSubscriptionExpirationNotifications(this.subscriptions);
+      } catch (error) {
+        console.warn("Failed to schedule subscription notifications", error);
+      }
+    },
+
     async loadFromDatabase() {
       this.isLoading = true;
       this.errorMessage = "";
@@ -252,6 +261,7 @@ export const subscriptionStore = defineStore("subscriptions", {
         }
 
         this.subscriptions.push(createdSubscription);
+        await this.syncLocalNotifications();
 
         return createdSubscription;
       } catch (error) {
@@ -289,6 +299,7 @@ export const subscriptionStore = defineStore("subscriptions", {
         }
 
         this.subscriptions[subscriptionIndex] = savedSubscription;
+        await this.syncLocalNotifications();
 
         return savedSubscription;
       } catch (error) {
@@ -309,6 +320,7 @@ export const subscriptionStore = defineStore("subscriptions", {
       try {
         await subscriptionRepository.deleteSubscription(id);
         this.subscriptions.splice(subscriptionIndex, 1);
+        await this.syncLocalNotifications();
       } catch (error) {
         this.errorMessage = "Не удалось удалить подписку";
         throw error;
@@ -393,6 +405,7 @@ export const subscriptionStore = defineStore("subscriptions", {
 
         this.categories = importedSnapshot.categories;
         this.subscriptions = importedSnapshot.subscriptions;
+        await this.syncLocalNotifications();
       } catch (error) {
         this.errorMessage = "Не удалось импортировать данные";
         throw error;
@@ -406,6 +419,7 @@ export const subscriptionStore = defineStore("subscriptions", {
 
         this.categories = snapshot.categories;
         this.subscriptions = snapshot.subscriptions;
+        await this.syncLocalNotifications();
       } catch (error) {
         this.errorMessage = "Не удалось очистить данные";
         throw error;
@@ -427,6 +441,7 @@ export const subscriptionStore = defineStore("subscriptions", {
 
       this.categories = snapshot.categories;
       this.subscriptions = snapshot.subscriptions;
+      await this.syncLocalNotifications();
     },
 
     sumSubscriptions() {
