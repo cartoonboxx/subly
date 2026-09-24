@@ -60,6 +60,11 @@ export const SubscriptionEntity = new EntitySchema<SubscriptionEntityModel>({
       name: "reminder_days",
       nullable: false,
       default: 3
+    },
+    expiresAt: {
+      type: "text",
+      name: "expires_at",
+      nullable: true
     }
   },
   relations: {

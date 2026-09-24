@@ -51,6 +51,7 @@ const toSubscription = (
     isActive: Boolean(subscription.isActive),
     registeredAt: subscription.registeredAt,
     reminderDays: Number(subscription.reminderDays),
+    expiresAt: subscription.expiresAt ?? null,
     category: subscription.category ? toCategory(subscription.category) : undefined,
     transactions: [...(subscription.transactions ?? [])]
       .map(toTransaction)
@@ -185,6 +186,7 @@ const saveSubscription = async (
     isActive: subscription.isActive,
     registeredAt: subscription.registeredAt,
     reminderDays: subscription.reminderDays,
+    expiresAt: subscription.expiresAt ?? null,
     category
   } as SubscriptionEntityModel);
 

@@ -278,6 +278,16 @@ export const getRegistrationDate = (
   );
 };
 
+export const getSubscriptionExpirationDate = (subscription: Subscription) => {
+  if (!subscription.expiresAt) {
+    return null;
+  }
+
+  const expirationDate = parseIsoDate(subscription.expiresAt);
+
+  return expirationDate ? toDateOnly(expirationDate) : null;
+};
+
 export const getOccurrencesInRange = (
   subscription: Subscription,
   start: Date,
@@ -287,6 +297,9 @@ export const getOccurrencesInRange = (
   const registrationDate = toDateOnly(
     getRegistrationDate(subscription, currentDate)
   );
+  const expirationDate = getSubscriptionExpirationDate(subscription);
+  const rangeEnd =
+    expirationDate && expirationDate < end ? expirationDate : end;
   const step = getPeriodStep(subscription.period);
   const sourceDay = registrationDate.getDate();
   const occurrences: Date[] = [];
@@ -294,7 +307,9 @@ export const getOccurrencesInRange = (
   let attempts = 0;
 
   if (step.unit === "once") {
-    return paymentDate >= start && paymentDate <= end ? [paymentDate] : [];
+    return paymentDate >= start && paymentDate <= rangeEnd
+      ? [paymentDate]
+      : [];
   }
 
   while (paymentDate < start && attempts < 600) {
@@ -302,7 +317,7 @@ export const getOccurrencesInRange = (
     attempts += 1;
   }
 
-  while (paymentDate <= end && attempts < 700) {
+  while (paymentDate <= rangeEnd && attempts < 700) {
     occurrences.push(paymentDate);
     paymentDate = addPeriod(paymentDate, step, sourceDay);
     attempts += 1;
@@ -316,6 +331,7 @@ export const getNextPaymentDate = (
   fromDate = new Date()
 ) => {
   const registrationDate = getRegistrationDate(subscription, fromDate);
+  const expirationDate = getSubscriptionExpirationDate(subscription);
   const step = getPeriodStep(subscription.period);
   const sourceDay = registrationDate.getDate();
   const today = toDateOnly(fromDate);
@@ -323,7 +339,10 @@ export const getNextPaymentDate = (
   let attempts = 0;
 
   if (step.unit === "once") {
-    return paymentDate >= today ? paymentDate : null;
+    return paymentDate >= today &&
+      (!expirationDate || paymentDate <= expirationDate)
+      ? paymentDate
+      : null;
   }
 
   while (paymentDate < today && attempts < 600) {
@@ -331,7 +350,7 @@ export const getNextPaymentDate = (
     attempts += 1;
   }
 
-  return paymentDate;
+  return expirationDate && paymentDate > expirationDate ? null : paymentDate;
 };
 
 export const getMonthlyEquivalent = (subscription: Subscription) => {

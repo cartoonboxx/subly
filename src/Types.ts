@@ -12,6 +12,7 @@ declare global {
     isActive: boolean;
     registeredAt: string;
     reminderDays: number;
+    expiresAt?: string | null;
     category?: Category;
     transactions: Transaction[];
   }

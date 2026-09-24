@@ -48,39 +48,32 @@
                 />
               </label>
 
-              <label :class="style.field">
+              <div :class="style.field">
                 <span>Категория</span>
-                <ion-select
-                  v-model="categoryId"
-                  interface="popover"
-                  @ionFocus="expandCreateModal"
-                >
-                  <ion-select-option
-                    v-for="category in categories"
-                    :key="category.id"
-                    :value="category.id"
+                <div :class="style.categorySelectRow">
+                  <ion-select
+                    v-model="categoryId"
+                    interface="popover"
+                    @ionFocus="expandCreateModal"
                   >
-                    {{ category.name }}
-                  </ion-select-option>
-                </ion-select>
-              </label>
+                    <ion-select-option
+                      v-for="category in categories"
+                      :key="category.id"
+                      :value="category.id"
+                    >
+                      {{ category.name }}
+                    </ion-select-option>
+                  </ion-select>
 
-              <div :class="style.categoryCreate">
-                <ion-input
-                  v-model="newCategoryName"
-                  placeholder="Новая категория"
-                  @ionFocus="expandCreateModal"
-                />
-
-                <UiButton
-                  type="button"
-                  variant="secondary"
-                  :class="style.categoryCreateButton"
-                  :disabled="!canCreateCategory"
-                  @click="createCategory"
-                >
-                  Добавить
-                </UiButton>
+                  <button
+                    type="button"
+                    :class="style.categoryAddButton"
+                    aria-label="Создать категорию"
+                    @click="openCategoryModal"
+                  >
+                    <ion-icon :icon="addOutline" />
+                  </button>
+                </div>
               </div>
 
               <label :class="style.field">
@@ -88,11 +81,36 @@
                 <button
                   type="button"
                   :class="style.dateButton"
-                  @click="openDatePicker"
+                  @click="openDatePicker('registeredAt')"
                 >
                   <strong>{{ registeredAtLabel }}</strong>
                   <em>Выбрать в календаре</em>
                 </button>
+              </label>
+
+              <label :class="style.field">
+                <span>Окончание</span>
+                <div :class="style.dateFieldActions">
+                  <button
+                    type="button"
+                    :class="style.dateButton"
+                    @click="openDatePicker('expiresAt')"
+                  >
+                    <strong>{{ expiresAtLabel }}</strong>
+                    <em>{{ expiresAtActionLabel }}</em>
+                  </button>
+
+                  <UiButton
+                    v-if="expiresAt"
+                    type="button"
+                    variant="dangerSoft"
+                    :class="style.clearDateButton"
+                    aria-label="Убрать дату окончания"
+                    @click="clearExpiresAt"
+                  >
+                    <ion-icon :icon="trashBinOutline" />
+                  </UiButton>
+                </div>
               </label>
             </div>
 
@@ -236,6 +254,65 @@
 
     <ion-modal
       :class="style.ionModal"
+      :is-open="isCategoryModalOpen"
+      :initial-breakpoint="0.48"
+      :breakpoints="[0, 0.48, 1]"
+      @didDismiss="closeCategoryModal"
+    >
+      <ion-content :class="style.pickerContent">
+        <form :class="style.categoryModal" @submit.prevent="createCategory">
+          <div :class="style.header">
+            <div>
+              <span :class="style.eyebrow">Категории</span>
+              <h2>Новая категория</h2>
+            </div>
+
+            <button
+              type="button"
+              :class="style.closeButton"
+              aria-label="Закрыть"
+              @click="closeCategoryModal"
+            >
+              <ion-icon :icon="closeOutline" />
+            </button>
+          </div>
+
+          <label :class="style.field">
+            <span>Название</span>
+            <ion-input
+              v-model="newCategoryName"
+              autofocus
+              placeholder="Например, Спорт"
+            />
+          </label>
+
+          <p v-if="categoryErrorMessage" :class="style.errorMessage">
+            {{ categoryErrorMessage }}
+          </p>
+
+          <div :class="[style.actionPanel, style.categoryActionPanel]">
+            <UiButton
+              type="button"
+              variant="neutral"
+              @click="closeCategoryModal"
+            >
+              Отмена
+            </UiButton>
+
+            <UiButton
+              type="submit"
+              variant="secondary"
+              :disabled="!canCreateCategory"
+            >
+              Создать
+            </UiButton>
+          </div>
+        </form>
+      </ion-content>
+    </ion-modal>
+
+    <ion-modal
+      :class="style.ionModal"
       :is-open="isDatePickerOpen"
       :initial-breakpoint="0.72"
       :breakpoints="[0, 0.72, 1]"
@@ -246,7 +323,7 @@
           <div :class="style.header">
             <div>
               <span :class="style.eyebrow">Дата</span>
-              <h2>Регистрация</h2>
+              <h2>{{ datePickerTitle }}</h2>
             </div>
 
             <button
@@ -259,10 +336,11 @@
           </div>
 
           <ion-datetime
-            :value="registeredAt"
+            :value="datePickerValue"
             :class="style.calendar"
+            :min="datePickerMin"
             presentation="date"
-            @ionChange="updateRegisteredAt"
+            @ionChange="updateSelectedDate"
           />
         </div>
       </ion-content>
@@ -346,7 +424,7 @@ import {
   IonSelectOption
 } from "@ionic/vue";
 import {defineComponent, PropType} from "vue";
-import {addOutline, closeOutline} from "ionicons/icons";
+import {addOutline, closeOutline, trashBinOutline} from "ionicons/icons";
 import UiButton from "@/components/ui/UiButton/UiButton.vue";
 import style from "./AddSubscriptionModal.module.scss";
 import {
@@ -354,6 +432,8 @@ import {
   colorOptions,
   iconOptions
 } from "@/pages/SubscriptionPage/components/AddSubscriptionModal/utils";
+
+type DatePickerMode = "registeredAt" | "expiresAt";
 
 export default defineComponent({
   name: "AddSubscriptionModal",
@@ -390,15 +470,19 @@ export default defineComponent({
   data() {
     return {
       addOutline,
+      trashBinOutline,
+      categoryErrorMessage: "",
       categoryId: this.categories[0]?.id ?? 1,
       closeOutline,
       colorClass: "green",
       colorOptions,
+      datePickerMode: "registeredAt" as DatePickerMode,
       editingIsActive: true,
       editingSubscriptionId: null as number | null,
       errorMessage: "",
       iconId: "youtube",
       iconOptions,
+      isCategoryModalOpen: false,
       isDeleteConfirmationVisible: false,
       isDatePickerOpen: false,
       isModalOpen: false,
@@ -409,6 +493,7 @@ export default defineComponent({
       period: "месяц",
       price: "",
       reminderDays: "",
+      expiresAt: null as string | null,
       registeredAt: this.getTodayIsoDate(),
       style
     };
@@ -441,6 +526,7 @@ export default defineComponent({
       const wasEditingExternalSubscription = Boolean(this.editableSubscription);
 
       this.isModalOpen = false;
+      this.isCategoryModalOpen = false;
       this.isDatePickerOpen = false;
       this.isPickerOpen = false;
       this.resetForm();
@@ -453,20 +539,38 @@ export default defineComponent({
       this.pickerMode = mode;
       this.isPickerOpen = true;
     },
-    openDatePicker() {
+    openCategoryModal() {
+      this.categoryErrorMessage = "";
+      this.newCategoryName = "";
+      this.isCategoryModalOpen = true;
+    },
+    closeCategoryModal() {
+      this.isCategoryModalOpen = false;
+      this.categoryErrorMessage = "";
+    },
+    openDatePicker(mode: DatePickerMode) {
+      this.datePickerMode = mode;
       this.isDatePickerOpen = true;
     },
     closeDatePicker() {
       this.isDatePickerOpen = false;
     },
-    updateRegisteredAt(event: CustomEvent<{value?: string | string[] | null}>) {
+    updateSelectedDate(event: CustomEvent<{value?: string | string[] | null}>) {
       const value = event.detail.value;
 
       if (typeof value !== "string") {
         return;
       }
 
-      this.registeredAt = value.slice(0, 10);
+      if (this.datePickerMode === "registeredAt") {
+        this.registeredAt = value.slice(0, 10);
+        return;
+      }
+
+      this.expiresAt = value.slice(0, 10);
+    },
+    clearExpiresAt() {
+      this.expiresAt = null;
     },
     closePicker() {
       this.isPickerOpen = false;
@@ -480,19 +584,29 @@ export default defineComponent({
     },
     async createCategory() {
       if (!this.canCreateCategory) {
+        this.categoryErrorMessage = "Название должно быть не короче 2 символов";
         return;
       }
 
-      const category = await this.$subscriptionStore.addCategory(
-        this.newCategoryName
-      );
+      let category: Category | null = null;
+
+      try {
+        category = await this.$subscriptionStore.addCategory(
+          this.newCategoryName
+        );
+      } catch {
+        this.categoryErrorMessage = "Не удалось создать категорию";
+        return;
+      }
 
       if (!category) {
+        this.categoryErrorMessage = "Не удалось создать категорию";
         return;
       }
 
       this.categoryId = category.id;
       this.newCategoryName = "";
+      this.closeCategoryModal();
       this.expandCreateModal();
     },
     getTodayIsoDate() {
@@ -505,6 +619,7 @@ export default defineComponent({
     },
     resetForm() {
       this.categoryId = this.categories[0]?.id ?? 1;
+      this.categoryErrorMessage = "";
       this.colorClass = "green";
       this.editingIsActive = true;
       this.editingSubscriptionId = null;
@@ -517,6 +632,7 @@ export default defineComponent({
       this.period = "месяц";
       this.price = "";
       this.reminderDays = String(this.$settingsStore.defaultReminderDays);
+      this.expiresAt = null;
       this.registeredAt = this.getTodayIsoDate();
     },
     fillForm(subscription: Subscription) {
@@ -529,6 +645,7 @@ export default defineComponent({
 
       this.categoryId =
         subscription.category?.id ?? this.categories[0]?.id ?? 1;
+      this.categoryErrorMessage = "";
       this.colorClass = selectedColor?.id ?? "green";
       this.editingIsActive = subscription.isActive;
       this.editingSubscriptionId = subscription.id;
@@ -541,6 +658,7 @@ export default defineComponent({
       this.period = subscription.period;
       this.price = String(subscription.price);
       this.reminderDays = String(subscription.reminderDays ?? 3);
+      this.expiresAt = subscription.expiresAt ?? null;
       this.registeredAt = subscription.registeredAt ?? this.getTodayIsoDate();
     },
     async toggleSubscriptionActivity() {
@@ -574,7 +692,7 @@ export default defineComponent({
     async saveSubscription() {
       if (!this.canSaveSubscription) {
         this.errorMessage =
-          "Заполни название, дату регистрации, цену и напоминание";
+          "Заполни название, дату регистрации, цену, напоминание и проверь даты";
         return;
       }
 
@@ -589,7 +707,8 @@ export default defineComponent({
         period: this.period,
         price: Number(this.price),
         registeredAt: this.registeredAt,
-        reminderDays
+        reminderDays,
+        expiresAt: this.expiresAt
       };
 
       if (this.isEditMode && this.editingSubscriptionId) {
@@ -657,17 +776,45 @@ export default defineComponent({
         : "Удалит подписку и историю списаний";
     },
     registeredAtLabel() {
-      const registeredAt = new Date(`${this.registeredAt}T00:00:00`);
+      return this.formatDateLabel(this.registeredAt, "Дата не выбрана");
+    },
+    expiresAtLabel() {
+      return this.expiresAt
+        ? this.formatDateLabel(this.expiresAt, "Дата не выбрана")
+        : "Без окончания";
+    },
+    expiresAtActionLabel() {
+      return this.expiresAt ? "Изменить дату" : "Выбрать дату";
+    },
+    datePickerTitle() {
+      return this.datePickerMode === "registeredAt"
+        ? "Регистрация"
+        : "Окончание";
+    },
+    datePickerValue() {
+      return this.datePickerMode === "registeredAt"
+        ? this.registeredAt
+        : (this.expiresAt ?? this.registeredAt);
+    },
+    datePickerMin() {
+      return this.datePickerMode === "expiresAt"
+        ? this.registeredAt
+        : undefined;
+    },
+    formatDateLabel() {
+      return (date: string, fallback: string) => {
+        const parsedDate = new Date(`${date}T00:00:00`);
 
-      if (Number.isNaN(registeredAt.getTime())) {
-        return "Дата не выбрана";
-      }
+        if (Number.isNaN(parsedDate.getTime())) {
+          return fallback;
+        }
 
-      return registeredAt.toLocaleDateString("ru-RU", {
-        day: "numeric",
-        month: "long",
-        year: "numeric"
-      });
+        return parsedDate.toLocaleDateString("ru-RU", {
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        });
+      };
     },
     submitButtonLabel() {
       return this.isEditMode ? "Сохранить изменения" : "Добавить подписку";
@@ -679,10 +826,15 @@ export default defineComponent({
       const price = Number(this.price);
       const reminderDays = Number(this.reminderDays);
       const registeredAt = new Date(`${this.registeredAt}T00:00:00`);
+      const expiresAt = this.expiresAt
+        ? new Date(`${this.expiresAt}T00:00:00`)
+        : null;
 
       return (
         Boolean(this.name.trim()) &&
         !Number.isNaN(registeredAt.getTime()) &&
+        (!expiresAt ||
+          (!Number.isNaN(expiresAt.getTime()) && expiresAt >= registeredAt)) &&
         Number.isFinite(price) &&
         price > 0 &&
         Number.isInteger(reminderDays) &&

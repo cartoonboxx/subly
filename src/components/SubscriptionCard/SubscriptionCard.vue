@@ -23,7 +23,7 @@
           {{ statusLabel }}
         </UiBadge>
       </div>
-      <span>{{ subscription.date }} · {{ reminderLabel }}</span>
+      <span>{{ subscriptionMetaLabel }}</span>
     </div>
 
     <div :class="style.priceInfo">
@@ -38,6 +38,7 @@ import {defineComponent, PropType} from "vue";
 import UiBadge from "@/components/ui/UiBadge/UiBadge.vue";
 import UiCard from "@/components/ui/UiCard/UiCard.vue";
 import UiServiceIcon from "@/components/ui/UiServiceIcon/UiServiceIcon.vue";
+import {formatShortDate, parseIsoDate} from "@/utils/subscriptionBilling";
 import style from "./SubscriptionCard.module.scss";
 
 export default defineComponent({
@@ -67,11 +68,25 @@ export default defineComponent({
     reminderLabel() {
       return `напомнить за ${this.subscription.reminderDays} дн.`;
     },
+    expirationLabel() {
+      if (!this.subscription.expiresAt) {
+        return "";
+      }
+
+      const expirationDate = parseIsoDate(this.subscription.expiresAt);
+
+      return expirationDate ? `до ${formatShortDate(expirationDate)}` : "";
+    },
     priceLabel() {
       return this.$settingsStore.formatCurrency(this.subscription.price);
     },
     statusLabel() {
       return this.subscription.isActive ? "Активна" : "Неактивна";
+    },
+    subscriptionMetaLabel() {
+      return [this.subscription.date, this.expirationLabel, this.reminderLabel]
+        .filter(Boolean)
+        .join(" · ");
     }
   },
   methods: {

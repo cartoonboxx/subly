@@ -9,6 +9,7 @@ import {
   formatSubscriptionDate,
   getPeriodStep,
   getRegistrationDate,
+  getSubscriptionExpirationDate,
   parseIsoDate,
   toDateOnly
 } from "@/utils/subscriptionBilling";
@@ -93,6 +94,9 @@ const buildTransactions = (
 ) => {
   const registrationDate = toDateOnly(getRegistrationDate(subscription));
   const today = toDateOnly(currentDate);
+  const expirationDate = getSubscriptionExpirationDate(subscription);
+  const billingEndDate =
+    expirationDate && expirationDate < today ? expirationDate : today;
   const step = getPeriodStep(subscription.period);
   const sourceDay = registrationDate.getDate();
   const transactions: Transaction[] = [];
@@ -100,7 +104,7 @@ const buildTransactions = (
   let transactionId = 1;
 
   if (step.unit === "once") {
-    return registrationDate <= today
+    return registrationDate <= billingEndDate
       ? [
           {
             id: transactionId,
@@ -110,7 +114,7 @@ const buildTransactions = (
       : [];
   }
 
-  while (transactionDate <= today) {
+  while (transactionDate <= billingEndDate) {
     transactions.push({
       id: transactionId,
       date: formatIsoDate(transactionDate)
@@ -163,6 +167,7 @@ const syncSubscriptionBilling = (
 ) => {
   const transactions = buildTransactions(subscription, currentDate);
   const today = toDateOnly(currentDate);
+  const expirationDate = getSubscriptionExpirationDate(subscription);
 
   if (!subscription.isActive) {
     return {
@@ -172,8 +177,9 @@ const syncSubscriptionBilling = (
   }
 
   if (
-    subscription.period === "разовая" &&
-    getOneTimeExpirationDate(subscription) <= today
+    (expirationDate && expirationDate <= today) ||
+    (subscription.period === "разовая" &&
+      getOneTimeExpirationDate(subscription) <= today)
   ) {
     return {
       ...subscription,

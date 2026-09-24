@@ -9,6 +9,7 @@ import {
   formatShortDate,
   getNextPaymentDate,
   getRegistrationDate,
+  getSubscriptionExpirationDate,
   toDateOnly
 } from "@/utils/subscriptionBilling";
 
@@ -54,6 +55,12 @@ const getSubscriptionNotificationId = (subscriptionId: number) => {
 const getExpirationDate = (subscription: Subscription) => {
   if (!subscription.isActive) {
     return null;
+  }
+
+  const configuredExpirationDate = getSubscriptionExpirationDate(subscription);
+
+  if (configuredExpirationDate) {
+    return configuredExpirationDate;
   }
 
   if (subscription.period === "разовая") {
